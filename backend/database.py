@@ -42,6 +42,19 @@ def init_db(app):
         dashboards_collection = db["dashboards"]
         users_collection      = db["users"]
         products_collection   = db["products"]
+        
+        # Auto-seed products if empty
+        if products_collection.count_documents({}) == 0:
+            print("[INFO] Products collection is empty. Seeding default products...")
+            default_products = [
+                {"name": "VoIP Corporate Package", "price": 450.0},
+                {"name": "Business Internet 500 Mbps", "price": 800.0},
+                {"name": "Fiber Internet 1 Gbps", "price": 1200.0},
+                {"name": "5G Unlimited Mobile Plan", "price": 300.0},
+                {"name": "Fiber Internet 300 Mbps", "price": 500.0}
+            ]
+            products_collection.insert_many(default_products)
+            print(f"[SUCCESS] Seeded {len(default_products)} products.")
 
     except Exception as e:
         print(f"[ERROR] Failed to connect to MongoDB: {e}")
