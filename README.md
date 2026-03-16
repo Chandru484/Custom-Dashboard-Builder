@@ -18,6 +18,9 @@ A premium, full-stack ERP-style dashboard for managing customer orders and viewi
   ![Mobile Dashboard](/d:/project/Halleyx/screenshots/mobile_dashboard.png)
   ![Mobile Settings](/d:/project/Halleyx/screenshots/settings_mobile.png)
 - **Admin Access:** A dedicated (unlisted) route for administrative login to manage system-wide settings.
+  ![Admin Login](/d:/project/Halleyx/screenshots/admin/login.png)
+  ![Product Management](/d:/project/Halleyx/screenshots/admin/product_management.png)
+  ![All Orders View](/d:/project/Halleyx/screenshots/admin/all_orders.png)
 
 ## 🛠️ Tech Stack
 
