@@ -41,14 +41,14 @@ const Login = ({ isAdmin = false }) => {
             alignItems: 'center',
             justifyContent: 'center',
             minHeight: '80vh',
-            padding: '1.5rem',
+            padding: '1rem',
             backgroundColor: '#f8fafc'
         }}>
             <div style={{
-                maxWidth: '400px',
                 width: '100%',
+                maxWidth: '400px',
                 backgroundColor: 'white',
-                padding: '2.5rem',
+                padding: 'min(2.5rem, 5vw)',
                 borderRadius: '12px',
                 boxShadow: '0 10px 25px rgba(0,0,0,0.05)',
                 border: '1px solid #e2e8f0'
