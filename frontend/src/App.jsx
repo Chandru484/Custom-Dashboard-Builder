@@ -3,13 +3,11 @@ import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-do
 import Dashboard from './pages/Dashboard';
 import ConfigureDashboard from './pages/ConfigureDashboard';
 import CustomerOrders from './pages/CustomerOrders';
-import Settings from './pages/Settings';
 import ProductManagement from './pages/ProductManagement';
 
 const NAV_LINKS = [
   { to: '/', label: 'Dashboard' },
   { to: '/orders', label: 'Customer Orders' },
-  { to: '/settings', label: 'Settings' },
   { to: '/products', label: 'Manage Products' },
 ];
 
@@ -144,7 +142,6 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/orders" element={<CustomerOrders />} />
             <Route path="/configure" element={<ConfigureDashboard />} />
-            <Route path="/settings" element={<Settings />} />
             <Route path="/products" element={<ProductManagement />} />
           </Routes>
         </main>
