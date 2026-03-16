@@ -9,6 +9,8 @@ export const AuthProvider = ({ children }) => {
 
     const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
     const API_URL = `${API_BASE_URL}/auth`;
+    
+    console.log('Auth API URL:', API_URL);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
