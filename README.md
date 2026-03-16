@@ -1,4 +1,4 @@
-# Halleyx Dashboard
+# Dashboard Builder
 
 A premium, full-stack ERP-style dashboard for managing customer orders and viewing real-time analytics. Built with a focus on **security**, **responsiveness**, and **performance**.
 

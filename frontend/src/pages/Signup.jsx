@@ -49,7 +49,7 @@ const Signup = () => {
                         Create Account
                     </h2>
                     <p style={{ color: '#64748b', fontSize: '0.875rem' }}>
-                        Join Halleyx and manage your dashboard
+                        Join Dashboard Builder and manage your dashboard
                     </p>
                 </div>
 

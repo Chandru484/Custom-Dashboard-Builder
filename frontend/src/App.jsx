@@ -58,7 +58,7 @@ const TopNavigation = () => {
             color: 'var(--primary)',
             letterSpacing: '-0.04em',
             flexShrink: 0,
-          }}>Halleyx</span>
+          }}>Dashboard Builder</span>
 
           {/* Desktop nav links — hidden on mobile via CSS */}
           <div className="nav-desktop-links" style={{ display: 'flex', gap: '0.25rem' }}>

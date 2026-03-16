@@ -23,7 +23,7 @@ def init_db(app):
     global db, orders_collection, dashboards_collection, users_collection, products_collection
 
     MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
-    DB_NAME   = os.getenv("DB_NAME", "halleyx")
+    DB_NAME   = os.getenv("DB_NAME", "dashboard_builder")
 
     try:
         client = MongoClient(
