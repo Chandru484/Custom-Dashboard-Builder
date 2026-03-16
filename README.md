@@ -5,13 +5,15 @@ A premium, full-stack ERP-style dashboard for managing customer orders and viewi
 ## 🚀 Features
 
 - **Secure Authentication:** Full JWT-based login and signup system with role-based access control (User & Admin).
-  ![Login Screen](file:///d:/project/Halleyx/screenshots/login.png)
+  ![Login Screen](/d:/project/Halleyx/screenshots/login.png)
 - **Dynamic Dashboard:** Configurable charts and KPI cards that update in real-time as data changes.
-  ![Dashboard Screen](file:///d:/project/Halleyx/screenshots/dashboard.png)
+  ![Dashboard Screen](/d:/project/Halleyx/screenshots/dashboard.png)
+- **Configure Dashboard:** Powerful drag-and-drop interface to build and customize your own dashboard layout.
+  ![Configure Screen](/d:/project/Halleyx/screenshots/configure.png)
 - **Order Management:** Complete CRUD operations for customer orders with automated price calculations.
-  ![Customer Orders Screen](file:///d:/project/Halleyx/screenshots/orders.png)
-- **User Data Isolation:** Each user has their own private dashboard data and order history. 
 - **Premium Responsive UI:** A "Deep Blue" minimal design that adapts perfectly to desktop, tablet, and mobile screens.
+  ![Mobile Dashboard](/d:/project/Halleyx/screenshots/mobile_dashboard.png)
+  ![Mobile Orders](/d:/project/Halleyx/screenshots/mobile_orders.png)
 - **Admin Access:** A dedicated (unlisted) route for administrative login to manage system-wide settings.
 
 ## 🛠️ Tech Stack
