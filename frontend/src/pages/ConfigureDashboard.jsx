@@ -38,6 +38,7 @@ const ConfigureDashboard = () => {
     const navigate = useNavigate();
     const [widgets, setWidgets] = useState([]);
     const [activeWidget, setActiveWidget] = useState(null); // Which widget is currently being configured
+    const [draggingWidget, setDraggingWidget] = useState(null); // Track widget being dragged from library
     const [saving, setSaving] = useState(false);
     const [orders, setOrders] = useState([]); // Raw order data
     const [loadingData, setLoadingData] = useState(true);
@@ -159,7 +160,15 @@ const ConfigureDashboard = () => {
                                     {WIDGET_TYPES.filter(w => w.type.includes('CHART') || w.type.includes('PLOT')).map(widget => (
                                         <div
                                             key={widget.type}
-                                            style={{ padding: '0.5rem 1rem', cursor: 'grab', display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}
+                                            className="widget-library-item"
+                                            style={{ padding: '0.5rem 1rem', cursor: 'grab', display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.9rem', color: 'var(--text-muted)', transition: 'all 0.2s', borderRadius: '6px' }}
+                                            draggable={true}
+                                            unselectable="on"
+                                            onDragStart={(e) => {
+                                                setDraggingWidget(widget);
+                                                // Required for some browsers to initiate drag
+                                                e.dataTransfer.setData("text/plain", "");
+                                            }}
                                             onClick={() => addWidget(widget)}
                                         >
                                             <span style={{ opacity: 0.5 }}>⠿</span>
@@ -177,7 +186,14 @@ const ConfigureDashboard = () => {
                                     {WIDGET_TYPES.filter(w => w.type === 'TABLE').map(widget => (
                                         <div
                                             key={widget.type}
-                                            style={{ padding: '0.5rem 1rem', cursor: 'grab', display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}
+                                            className="widget-library-item"
+                                            style={{ padding: '0.5rem 1rem', cursor: 'grab', display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.9rem', color: 'var(--text-muted)', transition: 'all 0.2s', borderRadius: '6px' }}
+                                            draggable={true}
+                                            unselectable="on"
+                                            onDragStart={(e) => {
+                                                setDraggingWidget(widget);
+                                                e.dataTransfer.setData("text/plain", "");
+                                            }}
                                             onClick={() => addWidget(widget)}
                                         >
                                             <span style={{ opacity: 0.5 }}>⠿</span>
@@ -195,7 +211,14 @@ const ConfigureDashboard = () => {
                                     {WIDGET_TYPES.filter(w => w.type === 'KPI').map(widget => (
                                         <div
                                             key={widget.type}
-                                            style={{ padding: '0.5rem 1rem', cursor: 'grab', display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}
+                                            className="widget-library-item"
+                                            style={{ padding: '0.5rem 1rem', cursor: 'grab', display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.9rem', color: 'var(--text-muted)', transition: 'all 0.2s', borderRadius: '6px' }}
+                                            draggable={true}
+                                            unselectable="on"
+                                            onDragStart={(e) => {
+                                                setDraggingWidget(widget);
+                                                e.dataTransfer.setData("text/plain", "");
+                                            }}
                                             onClick={() => addWidget(widget)}
                                         >
                                             <span style={{ opacity: 0.5 }}>⠿</span>
@@ -238,22 +261,41 @@ const ConfigureDashboard = () => {
                             </div>
                         )}
 
-                    <ResponsiveGridLayoutWithWidth
-                        className="layout"
-                        layouts={{
-                            lg: widgets.map(w => ({ i: w.id, ...w.grid })),
-                            md: widgets.map(w => ({ i: w.id, x: w.grid.x, y: w.grid.y, w: Math.min(w.grid.w, 8), h: w.grid.h })),
-                            sm: widgets.map(w => ({ i: w.id, x: 0, y: w.grid.y, w: Math.min(w.grid.w, 4), h: w.grid.h })),
-                        }}
-                        breakpoints={{ lg: 1025, md: 641, sm: 0 }}
-                        cols={{ lg: 12, md: 8, sm: 4 }}
-                        rowHeight={50}
-                        onLayoutChange={(currentLayout) => handleLayoutChange(currentLayout)}
-                        isDraggable={true}
-                        isResizable={true}
-                        draggableCancel=".non-draggable"
-                        margin={[16, 16]}
-                    >
+                        <ResponsiveGridLayoutWithWidth
+                            className="layout"
+                            layouts={{
+                                lg: widgets.map(w => ({ i: w.id, ...w.grid })),
+                                md: widgets.map(w => ({ i: w.id, x: w.grid.x, y: w.grid.y, w: Math.min(w.grid.w, 8), h: w.grid.h })),
+                                sm: widgets.map(w => ({ i: w.id, x: 0, y: w.grid.y, w: Math.min(w.grid.w, 4), h: w.grid.h })),
+                            }}
+                            breakpoints={{ lg: 1025, md: 641, sm: 0 }}
+                            cols={{ lg: 12, md: 8, sm: 4 }}
+                            rowHeight={50}
+                            onLayoutChange={(currentLayout) => handleLayoutChange(currentLayout)}
+                            isDraggable={true}
+                            isResizable={true}
+                            draggableCancel=".non-draggable"
+                            isDroppable={true}
+                            onDrop={(layout, item, e) => {
+                                if (!draggingWidget) return;
+                                const id = `widget_${Date.now()}`;
+                                const newWidget = {
+                                    id,
+                                    type: draggingWidget.type,
+                                    title: 'Untitled',
+                                    grid: { x: item.x, y: item.y, w: draggingWidget.defaultW, h: draggingWidget.defaultH },
+                                    config: {}
+                                };
+                                setWidgets([...widgets, newWidget]);
+                                setDraggingWidget(null);
+                            }}
+                            droppingItem={draggingWidget ? {
+                                i: "__dropping_elem__",
+                                w: draggingWidget.defaultW,
+                                h: draggingWidget.defaultH
+                            } : undefined}
+                            margin={[16, 16]}
+                        >
                         {widgets.map(widget => (
                             <div key={widget.id} style={{ display: 'flex', flexDirection: 'column', padding: '1rem', backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', marginBottom: '1rem' }}>

@@ -691,6 +691,16 @@ main { flex: 1; }
   .config-header-flex { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
 }
 
+.widget-library-item:hover {
+  background-color: var(--primary-light) !important;
+  color: var(--primary) !important;
+  transform: translateX(4px);
+}
+
+.widget-library-item:active {
+  cursor: grabbing;
+}
+
 /* ═══════════════════════════════════════════════════
    RESPONSIVE — TABLET  (≤ 1024px)
 ═══════════════════════════════════════════════════ */
