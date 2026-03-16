@@ -122,7 +122,7 @@ const ConfigureDashboard = () => {
             <div style={{ backgroundColor: 'white', borderRadius: '4px', display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 160px)', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
                 
                 {/* Inner Top Navigation Bar */}
-                <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <div style={{ padding: '1rem 1.5rem', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
                     <button className="btn-icon" onClick={() => navigate('/')} style={{ marginRight: '1rem', color: 'var(--text)' }}>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                     </button>
@@ -335,7 +335,7 @@ const ConfigureDashboard = () => {
 
 
             {/* Bottom Action Bar at the base of the white box */}
-            <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap', gap: '1rem', backgroundColor: 'white', borderRadius: '0 0 4px 4px' }}>
+            <div style={{ padding: '1rem 1.5rem', display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap', gap: '1rem', backgroundColor: 'white', borderRadius: '0 0 4px 4px' }}>
                 <button 
                     className="btn btn-outline" 
                     onClick={() => navigate('/')} 
