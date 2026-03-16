@@ -93,6 +93,10 @@ def update_order(order_id):
         except (ValueError, TypeError):
             pass
 
+    # Remove _id from data to avoid MongoDB immutability error if sent by frontend
+    data.pop("_id", None)
+    data.pop("user_id", None) # Also ensure user_id isn't accidentally overwritten
+
     query = {"_id": ObjectId(order_id)}
     if role != 'admin':
         query["user_id"] = user_id
