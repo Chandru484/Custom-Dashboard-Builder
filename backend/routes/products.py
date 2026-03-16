@@ -1,14 +1,12 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt
 import database
 from bson.objectid import ObjectId
 
 products_bp = Blueprint('products', __name__)
 
 @products_bp.route('/', methods=['GET'])
-@jwt_required()
 def get_products():
-    """List all products (Authenticated users)"""
+    """List all products"""
     try:
         products = []
         for p in database.products_collection.find():
@@ -19,13 +17,8 @@ def get_products():
         return jsonify({"error": str(e)}), 500
 
 @products_bp.route('/', methods=['POST'])
-@jwt_required()
 def add_product():
-    """Add a new product (Admin only)"""
-    claims = get_jwt()
-    if claims.get('role') != 'admin':
-        return jsonify({"error": "Admin access required"}), 403
-        
+    """Add a new product"""
     data = request.json or {}
     name = data.get('name')
     price = data.get('price', 0)
@@ -49,13 +42,8 @@ def add_product():
         return jsonify({"error": str(e)}), 500
 
 @products_bp.route('/<id>', methods=['PUT'])
-@jwt_required()
 def update_product(id):
-    """Update a product (Admin only)"""
-    claims = get_jwt()
-    if claims.get('role') != 'admin':
-        return jsonify({"error": "Admin access required"}), 403
-        
+    """Update a product"""
     data = request.json or {}
     update_data = {}
     if 'name' in data:
@@ -84,13 +72,8 @@ def update_product(id):
         return jsonify({"error": str(e)}), 500
 
 @products_bp.route('/<id>', methods=['DELETE'])
-@jwt_required()
 def delete_product(id):
-    """Remove a product (Admin only)"""
-    claims = get_jwt()
-    if claims.get('role') != 'admin':
-        return jsonify({"error": "Admin access required"}), 403
-        
+    """Remove a product"""
     try:
         result = database.products_collection.delete_one({"_id": ObjectId(id)})
         if result.deleted_count == 0:

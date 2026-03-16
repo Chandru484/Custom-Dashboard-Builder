@@ -38,7 +38,7 @@ const Toast = ({ message, type = 'success', onDone }) => {
 const blank = {
     first_name: '', last_name: '', email: '', phone: '',
     street_address: '', city: '', state: '', postal_code: '', country: '',
-    product: '', quantity: 1, unit_price: '', status: 'Pending', created_by: '',
+    product: '', quantity: 1, unit_price: '', status: 'Pending', created_by: 'Guest',
 };
 
 // ─── Tiny helpers ─────────────────────────────────────────────────────────────

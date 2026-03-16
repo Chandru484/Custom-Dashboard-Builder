@@ -5,7 +5,6 @@ import {
     CartesianGrid, ResponsiveContainer, Legend
 } from 'recharts';
 import { orderServices } from '../services/api';
-import { useAuth } from '../context/AuthContext';
 import OrderFormModal from '../components/CustomerOrder/OrderFormModal';
 import { Plus, Edit2, Trash2, MoreVertical } from 'lucide-react';
 
@@ -93,8 +92,7 @@ const CustomerOrders = () => {
             (o.order_id || '').toLowerCase().includes(q) ||
             (o.customer_name || `${o.first_name || ''} ${o.last_name || ''}`).toLowerCase().includes(q) ||
             (o.product || '').toLowerCase().includes(q) ||
-            (o.status || '').toLowerCase().includes(q) ||
-            (o.owner_email || '').toLowerCase().includes(q)
+            (o.status || '').toLowerCase().includes(q)
         );
     });
 
@@ -115,8 +113,7 @@ const CustomerOrders = () => {
         );
     };
 
-    const { user: authUser } = useAuth();
-    const isAdmin = authUser?.role === 'admin';
+    const isAdmin = true;
 
     if (loading) return (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: 'var(--text-muted)' }}>

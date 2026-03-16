@@ -4,7 +4,6 @@ import {
     BarChart, Bar, PieChart, Pie, Cell, Tooltip, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend
 } from 'recharts';
 import { orderServices } from '../services/api';
-import { useAuth } from '../context/AuthContext';
 
 const COLORS = ['#2563eb', '#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6'];
 
@@ -69,8 +68,7 @@ const Dashboard = () => {
     // --- Pending Orders Table ---
     const pendingOrders = orders.filter(o => (o.status || '').toLowerCase() === 'pending').slice(0, 5);
 
-    const { user: authUser } = useAuth();
-    const isAdmin = authUser?.role === 'admin';
+    const isAdmin = true;
 
     if (loading) {
         return (

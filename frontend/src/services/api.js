@@ -10,20 +10,6 @@ const api = axios.create({
     }
 });
 
-// Add a request interceptor to include the JWT token
-api.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
-
 export const orderServices = {
     getOrders: () => api.get('/orders'),
     createOrder: (order) => api.post('/orders', order),
@@ -36,10 +22,6 @@ export const productServices = {
     addProduct: (data) => api.post('/products', data),
     updateProduct: (id, data) => api.put(`/products/${id}`, data),
     deleteProduct: (id) => api.delete(`/products/${id}`)
-};
-
-export const authServices = {
-    updateProfile: (data) => api.put('/auth/profile', data)
 };
 
 export const dashboardServices = {

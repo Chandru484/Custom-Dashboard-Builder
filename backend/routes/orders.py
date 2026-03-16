@@ -1,40 +1,33 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 import database
 from bson.objectid import ObjectId
 
 orders_bp = Blueprint('orders', __name__)
 
 @orders_bp.route('/', methods=['GET'])
-@jwt_required()
 def get_orders():
-    """Fetch orders for the current user (or all for admin)"""
+    """Fetch all orders (Everyone is admin now)"""
     try:
-        user_id = get_jwt_identity()
-        claims = get_jwt()
-        role = claims.get('role')
-
-        query = {"user_id": user_id}
-        is_admin = (role == 'admin')
-        if is_admin:
-            query = {} # Admin sees everything
-            
+        query = {} 
         orders = []
-        # Cache for user emails to avoid redundant DB hits
         user_cache = {}
 
         for order in database.orders_collection.find(query):
             order['_id'] = str(order['_id'])
             
-            if is_admin:
-                uid = order.get('user_id')
-                if uid:
-                    if uid not in user_cache:
+            uid = order.get('user_id')
+            if uid == 'guest_user':
+                order['owner_email'] = 'Guest'
+            elif uid:
+                if uid not in user_cache:
+                    try:
                         u = database.users_collection.find_one({"_id": ObjectId(uid)})
                         user_cache[uid] = u.get('email') if u else 'Unknown'
-                    order['owner_email'] = user_cache[uid]
-                else:
-                    order['owner_email'] = 'System'
+                    except:
+                        user_cache[uid] = 'Unknown'
+                order['owner_email'] = user_cache[uid]
+            else:
+                order['owner_email'] = 'System'
                     
             orders.append(order)
         return jsonify(orders), 200
@@ -43,11 +36,10 @@ def get_orders():
 
 
 @orders_bp.route('/', methods=['POST'])
-@jwt_required()
 def create_order():
-    """Create a new customer order for the current user"""
+    """Create a new customer order"""
     data = request.json or {}
-    user_id = get_jwt_identity()
+    user_id = "guest_user"
 
     # Required fields
     required_fields = [
@@ -78,13 +70,9 @@ def create_order():
 
 
 @orders_bp.route('/<order_id>', methods=['PUT'])
-@jwt_required()
 def update_order(order_id):
-    """Update an existing customer order (only if it belongs to current user or if admin)"""
+    """Update an existing customer order"""
     data = request.json or {}
-    user_id = get_jwt_identity()
-    claims = get_jwt()
-    role = claims.get('role')
 
     # Recalculate total if price or qty changed
     if "quantity" in data and "unit_price" in data:
@@ -95,11 +83,9 @@ def update_order(order_id):
 
     # Remove _id from data to avoid MongoDB immutability error if sent by frontend
     data.pop("_id", None)
-    data.pop("user_id", None) # Also ensure user_id isn't accidentally overwritten
+    data.pop("user_id", None)
 
     query = {"_id": ObjectId(order_id)}
-    if role != 'admin':
-        query["user_id"] = user_id
 
     try:
         result = database.orders_collection.update_one(
@@ -107,7 +93,7 @@ def update_order(order_id):
             {"$set": data}
         )
         if result.matched_count == 0:
-            return jsonify({"error": "Order not found or unauthorized"}), 404
+            return jsonify({"error": "Order not found"}), 404
 
         updated = database.orders_collection.find_one({"_id": ObjectId(order_id)})
         updated['_id'] = str(updated['_id'])
@@ -117,21 +103,14 @@ def update_order(order_id):
 
 
 @orders_bp.route('/<order_id>', methods=['DELETE'])
-@jwt_required()
 def delete_order(order_id):
-    """Delete a customer order (only if it belongs to current user or if admin)"""
-    user_id = get_jwt_identity()
-    claims = get_jwt()
-    role = claims.get('role')
-
+    """Delete a customer order"""
     query = {"_id": ObjectId(order_id)}
-    if role != 'admin':
-        query["user_id"] = user_id
 
     try:
         result = database.orders_collection.delete_one(query)
         if result.deleted_count == 0:
-            return jsonify({"error": "Order not found or unauthorized"}), 404
+            return jsonify({"error": "Order not found"}), 404
         return jsonify({"message": "Order deleted successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
