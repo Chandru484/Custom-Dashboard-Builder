@@ -8,14 +8,15 @@ import { orderServices } from '../services/api';
 import OrderFormModal from '../components/CustomerOrder/OrderFormModal';
 import { Plus, Edit2, Trash2, MoreVertical } from 'lucide-react';
 
-const COLORS = ['#2563eb', '#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6'];
+const COLORS = ['#16a34a', '#eab308', '#2563eb', '#ef4444', '#8b5cf6'];
+
+import { useToast } from '../context/ToastContext';
 
 const CustomerOrders = () => {
+    const { showToast } = useToast();
     const navigate = useNavigate();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('dashboard');
-    const [dateFilter, setDateFilter] = useState('ALL');
 
     // Modal / context menu state
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,6 +35,7 @@ const CustomerOrders = () => {
             setOrders(res.data || []);
         } catch (e) {
             console.error(e);
+            showToast("Failed to load orders.", "error");
         } finally {
             setLoading(false);
         }
@@ -42,9 +44,11 @@ const CustomerOrders = () => {
     const handleDelete = async (id) => {
         try {
             await orderServices.deleteOrder(id);
+            showToast("Order deleted successfully!", "success");
             fetchOrders();
         } catch (e) {
             console.error(e);
+            showToast("Failed to delete order.", "error");
         }
         setActiveMenuId(null);
     };
@@ -84,8 +88,37 @@ const CustomerOrders = () => {
     // ── Pending orders ────────────────────────────────────
     const pendingOrders = orders.filter(o => (o.status || '').toLowerCase() === 'pending').slice(0, 5);
 
+    // ── Pagination/Filter State ──────────────────────────
+    const [statusFilter, setStatusFilter] = useState('All');
+    const [dateFilter, setDateFilter] = useState('All time');
+
     // ── Search filter ─────────────────────────────────
     const filteredOrders = orders.filter(o => {
+        // Status Filter
+        const matchesStatus = statusFilter === 'All' || (o.status || '').toLowerCase() === statusFilter.toLowerCase();
+        if (!matchesStatus) return false;
+
+        // Date Filter
+        const matchesDate = (() => {
+            if (dateFilter === 'All time') return true;
+            let ds = o.created_at || o.order_date;
+            if (!ds && o._id?.length === 24)
+                ds = new Date(parseInt(o._id.substring(0, 8), 16) * 1000).toISOString();
+            if (!ds) return false;
+            
+            const orderDate = new Date(ds);
+            const now = new Date();
+            const diffDays = (now - orderDate) / (1000 * 60 * 60 * 24);
+
+            if (dateFilter === 'Last 7 days') return diffDays <= 7;
+            if (dateFilter === 'Last 30 days') return diffDays <= 30;
+            if (dateFilter === 'This Month') return orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear();
+            if (dateFilter === 'This Year') return orderDate.getFullYear() === now.getFullYear();
+            return true;
+        })();
+        if (!matchesDate) return false;
+
+        // Search Query
         if (!searchQuery.trim()) return true;
         const q = searchQuery.toLowerCase();
         return (
@@ -100,14 +133,16 @@ const CustomerOrders = () => {
     const fmt = (v) => `₹${parseFloat(v || 0).toFixed(2)}`;
     const orderId = (o, i) => o.order_id || `ORD-${String(i + 1).padStart(4, '0')}`;
     const statusBadge = (status) => {
-        const map = {
-            Completed: { bg: '#d1fae5', color: '#059669' },
-            Pending:   { bg: '#fef3c7', color: '#b45309' },
-            'In progress': { bg: '#dbeafe', color: '#2563eb' },
-        };
-        const s = map[status] || { bg: '#f1f5f9', color: '#64748b' };
+        const s = (status || 'Unknown').toLowerCase();
+        let className = 'status-pill';
+        if (s === 'pending') className += ' status-pending';
+        else if (s === 'delivered' || s === 'completed') className += ' status-delivered';
+        else if (s === 'in progress' || s === 'processing' || s === 'shipped') className += ' status-processing';
+        else if (s === 'cancelled') className += ' status-cancelled';
+        else className += ' status-neutral';
+
         return (
-            <span style={{ padding: '0.2rem 0.6rem', borderRadius: 99, fontSize: '0.75rem', fontWeight: 500, backgroundColor: s.bg, color: s.color }}>
+            <span className={className}>
                 {status || 'Unknown'}
             </span>
         );
@@ -122,260 +157,111 @@ const CustomerOrders = () => {
     );
 
     return (
-        <div style={{ backgroundColor: '#f0f2f4', minHeight: 'calc(100vh - 60px)' }}>
-            <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', overflow: 'hidden' }}>
+        <div style={{ backgroundColor: '#f8fafc', minHeight: 'calc(100vh - 60px)', padding: '1.5rem' }}>
+            <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden', border: '1px solid var(--border)' }}>
 
-                {/* ── Header ─────────────────────────────── */}
-                <div className="page-header">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-                        <div>
-                            <h1 style={{ fontSize: '1.4rem', fontWeight: 700, margin: 0, color: 'var(--text-dark)' }}>Customer Orders</h1>
-                            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.25rem 0 0' }}>View and manage customer orders and details</p>
+                {/* ── Filter & Utility Bar ────────────────── */}
+                <div className="order-filter-bar">
+                    <div className="order-filter-group">
+                        <div style={{ display: 'flex', alignItems: 'center', backgroundColor: '#f1f5f9', borderRadius: '8px', padding: '0.25rem 0.75rem', marginRight: '1rem', border: '1px solid var(--border)' }}>
+                            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginRight: '0.5rem' }}>Date</span>
+                            <select 
+                                value={dateFilter}
+                                onChange={(e) => setDateFilter(e.target.value)}
+                                style={{ border: 'none', background: 'none', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-dark)', cursor: 'pointer', outline: 'none' }}
+                            >
+                                <option>All time</option>
+                                <option>Last 7 days</option>
+                                <option>Last 30 days</option>
+                                <option>This Month</option>
+                                <option>This Year</option>
+                            </select>
                         </div>
-                    </div>
 
-                    {/* Tabs */}
-                    <div style={{ display: 'flex', marginTop: '1rem', borderBottom: '2px solid var(--border)' }}>
-                        {['dashboard', 'table'].map(tab => (
-                            <button key={tab} onClick={() => setActiveTab(tab)} style={{
-                                padding: '0.5rem 1.25rem', background: 'none', border: 'none',
-                                borderBottom: activeTab === tab ? '2px solid var(--primary)' : '2px solid transparent',
-                                marginBottom: '-2px',
-                                color: activeTab === tab ? 'var(--primary)' : 'var(--text-muted)',
-                                fontWeight: activeTab === tab ? 600 : 400, fontSize: '0.875rem', cursor: 'pointer',
-                                display: 'flex', alignItems: 'center', gap: '0.4rem', transition: 'all 0.2s'
-                            }}>
-                                {tab === 'dashboard' ? '▦' : '☰'} {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                        {['All', 'Pending', 'In Progress', 'Completed'].map(status => (
+                            <button
+                                key={status}
+                                className={`btn-filter ${statusFilter === status ? 'active' : ''}`}
+                                onClick={() => setStatusFilter(status)}
+                            >
+                                {status}
                             </button>
                         ))}
                     </div>
+
+                    <div className="order-search-container">
+                        <span className="order-search-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+                            </svg>
+                        </span>
+                        <input
+                            type="text"
+                            className="order-search-input"
+                            placeholder="Search orders, customer, product..."
+                            value={searchQuery}
+                            onChange={e => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+
+                    <button className="btn btn-primary" onClick={() => { setSelectedOrder(null); setIsModalOpen(true); }}
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', padding: '0.5rem 1rem' }}>
+                        <Plus size={16} /> Create Order
+                    </button>
                 </div>
 
-                {/* ── Dashboard Tab ───────────────────────── */}
-                {activeTab === 'dashboard' && (
-                    <div className="page-content">
-
-                        {/* Date filter */}
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.25rem' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                                🗓
-                                <select className="form-select" style={{ width: '150px', fontSize: '0.8rem', padding: '0.3rem 0.6rem' }}
-                                    value={dateFilter} onChange={e => setDateFilter(e.target.value)}>
-                                    <option value="ALL">All time</option>
-                                    <option value="TODAY">Today</option>
-                                    <option value="LAST_7_DAYS">Last 7 Days</option>
-                                    <option value="LAST_30_DAYS">Last 30 Days</option>
-                                    <option value="LAST_90_DAYS">Last 90 Days</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        {/* KPI Cards */}
-                        <div className="grid-kpi">
-                            {[
-                                { label: 'Total Orders', value: totalOrders },
-                                { label: 'Total Revenue', value: `₹${totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}` },
-                                { label: 'Total Customers', value: totalCustomers },
-                                { label: 'Total Sold Quantity', value: totalQuantity },
-                            ].map(({ label, value }) => (
-                                <div key={label} className="kpi-card">
-                                    <p className="kpi-label">{label}</p>
-                                    <p className="kpi-value">{value}</p>
-                                </div>
+                <div className="table-responsive">
+                    <table className="data-table orders-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Product</th>
+                                <th>Qty</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Created By</th>
+                                <th style={{ textAlign: 'right' }}>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredOrders.length === 0 ? (
+                                <tr>
+                                    <td colSpan={8} style={{ padding: '4rem 2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                                        <div style={{ marginBottom: '1rem', opacity: 0.5 }}>
+                                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                                                <line x1="8" y1="21" x2="16" y2="21" />
+                                                <line x1="12" y1="17" x2="12" y2="21" />
+                                            </svg>
+                                        </div>
+                                        {searchQuery ? `No orders match "${searchQuery}"` : "No orders found for this status."}
+                                    </td>
+                                </tr>
+                            ) : filteredOrders.map((o, i) => (
+                                <tr key={o._id || i}>
+                                    <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{orderId(o, i)}</td>
+                                    <td style={{ fontWeight: 500 }}>{o.customer_name || `${o.first_name || ''} ${o.last_name || ''}`.trim() || '-'}</td>
+                                    <td>{o.product}</td>
+                                    <td>{o.quantity}</td>
+                                    <td style={{ fontWeight: 600 }}>{fmt(o.total_amount)}</td>
+                                    <td>{statusBadge(o.status)}</td>
+                                    <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{o.owner_email ? o.owner_email.split('@')[0] : 'admin'}</td>
+                                    <td>
+                                        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                                            <button className="action-btn-circle" title="Edit" onClick={() => { setSelectedOrder(o); setIsModalOpen(true); }}>
+                                                <Edit2 size={14} />
+                                            </button>
+                                            <button className="action-btn-circle" title="Delete" style={{ color: 'var(--danger)' }} onClick={() => handleDelete(o._id)}>
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
                             ))}
-                        </div>
-
-                        {/* Charts */}
-                        <div className="grid-charts">
-                            {/* Bar – Monthly Revenue */}
-                            <div style={{ border: '1px solid var(--border)', borderRadius: '6px', padding: '1.25rem' }}>
-                                <p style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '1rem', color: 'var(--text-dark)' }}>Monthly Revenue</p>
-                                {monthlyRevenue.length > 0 ? (
-                                    <ResponsiveContainer width="100%" height={220}>
-                                        <BarChart data={monthlyRevenue}>
-                                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                                            <XAxis dataKey="month" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-                                            <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `₹${v.toLocaleString('en-IN')}`} />
-                                            <Tooltip formatter={v => [`₹${v.toLocaleString('en-IN')}`, 'Revenue']} />
-                                            <Bar dataKey="revenue" fill="#2563eb" radius={[3, 3, 0, 0]} />
-                                        </BarChart>
-                                    </ResponsiveContainer>
-                                ) : (
-                                    <div style={{ height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '0.875rem' }}>No data available</div>
-                                )}
-                            </div>
-
-                            {/* Pie – Status Overview */}
-                            <div style={{ border: '1px solid var(--border)', borderRadius: '6px', padding: '1.25rem' }}>
-                                <p style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '1rem', color: 'var(--text-dark)' }}>Status overview</p>
-                                {statusData.length > 0 ? (
-                                    <ResponsiveContainer width="100%" height={220}>
-                                        <PieChart>
-                                            <Pie data={statusData} cx="40%" cy="50%" outerRadius={90} dataKey="value" nameKey="name">
-                                                {statusData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                                            </Pie>
-                                            <Tooltip />
-                                            <Legend layout="vertical" align="right" verticalAlign="middle" iconType="square" wrapperStyle={{ fontSize: '0.8rem' }} />
-                                        </PieChart>
-                                    </ResponsiveContainer>
-                                ) : (
-                                    <div style={{ height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '0.875rem' }}>No data available</div>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Pending Orders Table */}
-                        <div style={{ border: '1px solid var(--border)', borderRadius: '6px', overflow: 'hidden' }}>
-                            <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--border)' }}>
-                                <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-dark)' }}>Pending orders</p>
-                            </div>
-                            <div className="table-responsive">
-                            <table className="data-table">
-                                <thead>
-                                    <tr>
-                                        {['Order ID', 'Quantity', 'Product', 'Total amount'].map(col => (
-                                            <th key={col}>{col}</th>
-                                        ))}
-                                        {isAdmin && <th>Owner</th>}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {pendingOrders.length > 0 ? pendingOrders.map((o, i) => (
-                                        <tr key={o._id || i} style={{ borderBottom: '1px solid var(--border)', cursor: 'pointer', transition: 'background 0.15s' }}
-                                            onMouseEnter={e => e.currentTarget.style.backgroundColor = '#f8fafc'}
-                                            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
-                                            <td style={{ padding: '0.75rem 1.25rem', color: 'var(--text-muted)' }}>{orderId(o, i)}</td>
-                                            <td style={{ padding: '0.75rem 1.25rem' }}>{o.quantity}</td>
-                                            <td style={{ padding: '0.75rem 1.25rem' }}>{o.product}</td>
-                                            <td style={{ padding: '0.75rem 1.25rem' }}>{fmt(o.total_amount)}</td>
-                                            {isAdmin && <td style={{ padding: '0.75rem 1.25rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>{o.owner_email || '-'}</td>}
-                                        </tr>
-                                    )) : (
-                                        <tr><td colSpan={isAdmin ? 5 : 4} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No pending orders</td></tr>
-                                    )}
-                                </tbody>
-                            </table>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* ── Table Tab ───────────────────────────── */}
-                {activeTab === 'table' && (
-                    <div className="page-content">
-                        {/* Header row */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
-                            <h3 style={{ margin: 0, fontSize: '1rem', color: 'var(--text-dark)' }}>All Orders</h3>
-                            <button className="btn btn-primary" onClick={() => { setSelectedOrder(null); setIsModalOpen(true); }}
-                                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
-                                <Plus size={15} /> Create Order
-                            </button>
-                        </div>
-
-                        {/* Search bar */}
-                        <div style={{ position: 'relative', marginBottom: '1rem' }}>
-                            <span style={{
-                                position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)',
-                                color: 'var(--text-muted)', pointerEvents: 'none', display: 'flex', alignItems: 'center'
-                            }}>
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-                                </svg>
-                            </span>
-                            <input
-                                type="text"
-                                className="form-input"
-                                placeholder="Search by customer, product, order ID or status…"
-                                value={searchQuery}
-                                onChange={e => setSearchQuery(e.target.value)}
-                                style={{ paddingLeft: '2.25rem', paddingRight: searchQuery ? '2.25rem' : '0.75rem' }}
-                            />
-                            {searchQuery && (
-                                <button
-                                    onClick={() => setSearchQuery('')}
-                                    style={{
-                                        position: 'absolute', right: '0.6rem', top: '50%', transform: 'translateY(-50%)',
-                                        background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)',
-                                        fontSize: '1rem', lineHeight: 1, padding: '0.1rem 0.3rem', borderRadius: '50%'
-                                    }}
-                                    aria-label="Clear search"
-                                >×</button>
-                            )}
-                        </div>
-                        {orders.length === 0 ? (
-                            /* ── Empty State ── */
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '5rem 2rem', textAlign: 'center' }}>
-                                <div style={{ width: '72px', height: '72px', backgroundColor: '#f0fdf4', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
-                                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
-                                        <rect x="9" y="3" width="6" height="4" rx="1" />
-                                        <path d="M9 12h6M9 16h4" />
-                                    </svg>
-                                </div>
-                                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111827', margin: '0 0 0.5rem' }}>No orders yet</h3>
-                                <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: '0 0 1.5rem', maxWidth: '340px' }}>
-                                    You haven't created any orders yet. Click below to get started.
-                                </p>
-                                <button
-                                    onClick={() => { setSelectedOrder(null); setIsModalOpen(true); }}
-                                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1.4rem', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer' }}
-                                >
-                                    <Plus size={15} /> Create Order
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="table-responsive" style={{ border: '1px solid var(--border)', borderRadius: '6px' }}>
-                                <table className="data-table">
-                                    <thead>
-                                        <tr>
-                                            {['Order ID', 'Customer', 'Product', 'Quantity', 'Total Amount', 'Status'].map((col, i) => (
-                                                <th key={i}>{col}</th>
-                                            ))}
-                                            {isAdmin && <th>Owner</th>}
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {filteredOrders.length === 0 ? (
-                                            <tr>
-                                                <td colSpan={isAdmin ? 8 : 7} style={{ padding: '2.5rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-                                                    No orders match &ldquo;{searchQuery}&rdquo;
-                                                </td>
-                                            </tr>
-                                        ) : filteredOrders.map((o, i) => (
-                                            <tr key={o._id || i} style={{ borderBottom: '1px solid var(--border)' }}>
-                                                <td style={{ padding: '0.75rem 1rem', color: 'var(--text-muted)' }}>{orderId(o, i)}</td>
-                                                <td style={{ padding: '0.75rem 1rem' }}>{o.customer_name || `${o.first_name || ''} ${o.last_name || ''}`.trim() || '-'}</td>
-                                                <td style={{ padding: '0.75rem 1rem' }}>{o.product}</td>
-                                                <td style={{ padding: '0.75rem 1rem' }}>{o.quantity}</td>
-                                                <td style={{ padding: '0.75rem 1rem' }}>{fmt(o.total_amount)}</td>
-                                                <td style={{ padding: '0.75rem 1rem' }}>{statusBadge(o.status)}</td>
-                                                {isAdmin && <td style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>{o.owner_email || '-'}</td>}
-                                                <td style={{ padding: '0.75rem 1rem', position: 'relative' }}>
-                                                    <button className="btn-icon" onClick={() => setActiveMenuId(activeMenuId === o._id ? null : o._id)}>
-                                                        <MoreVertical size={15} />
-                                                    </button>
-                                                    {activeMenuId === o._id && (
-                                                        <div style={{ position: 'absolute', right: '100%', top: '50%', transform: 'translateY(-50%)', backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: '6px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10, minWidth: '120px', padding: '0.25rem 0' }}>
-                                                            <button style={{ display: 'flex', width: '100%', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-dark)', fontSize: '0.85rem' }}
-                                                                onClick={() => { setSelectedOrder(o); setIsModalOpen(true); setActiveMenuId(null); }}>
-                                                                 <Edit2 size={13} /> Edit
-                                                            </button>
-                                                            <button style={{ display: 'flex', width: '100%', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', fontSize: '0.85rem' }}
-                                                                onClick={() => handleDelete(o._id)}>
-                                                                <Trash2 size={13} /> Delete
-                                                            </button>
-                                                        </div>
-                                                    )}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
-                    </div>
-                )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {isModalOpen && (

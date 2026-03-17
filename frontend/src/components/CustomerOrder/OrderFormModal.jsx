@@ -64,7 +64,7 @@ const Field = ({ lbl, required, error, children }) => (
 
 const GroupHeader = ({ title }) => (
     <div style={{
-        fontSize: '0.75rem', fontWeight: 700, color: '#2563eb',
+        fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary)',
         textTransform: 'uppercase', letterSpacing: '0.06em',
         borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem',
         marginTop: '1.25rem', marginBottom: '1rem',

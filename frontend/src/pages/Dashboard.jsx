@@ -5,13 +5,19 @@ import {
 } from 'recharts';
 import { orderServices } from '../services/api';
 
-const COLORS = ['#2563eb', '#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6'];
+const COLORS = [
+    '#2563eb', // blue
+    '#16a34a', // green
+    '#ef4444', // red
+    '#eab308', // yellow
+    '#8b5cf6', // violet
+];
 
 const Dashboard = () => {
     const navigate = useNavigate();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('dashboard');
+    const [error, setError] = useState(null);
     const [dateFilter, setDateFilter] = useState('ALL');
 
     useEffect(() => {
@@ -20,10 +26,12 @@ const Dashboard = () => {
 
     const loadData = async () => {
         try {
+            setError(null);
             const res = await orderServices.getOrders();
             setOrders(res.data || []);
         } catch (error) {
             console.error('Error loading dashboard data', error);
+            setError('Could not connect to the backend server. Please ensure the API is running.');
         } finally {
             setLoading(false);
         }
@@ -72,8 +80,25 @@ const Dashboard = () => {
 
     if (loading) {
         return (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: 'var(--text-muted)' }}>
-                Loading dashboard...
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
+                <div className="animate-spin" style={{ width: '40px', height: '40px', border: '3px solid var(--primary-light)', borderTop: '3px solid var(--primary)', borderRadius: '50%', marginBottom: '1rem' }}></div>
+                <p style={{ color: 'var(--text-muted)' }}>Loading dashboard...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', padding: '2rem', textAlign: 'center' }}>
+                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚠️</div>
+                <h3 style={{ marginBottom: '0.5rem', color: 'var(--text-dark)' }}>Offline</h3>
+                <p style={{ color: 'var(--text-muted)', maxWidth: '400px', marginBottom: '1.5rem' }}>{error}</p>
+                <button 
+                    onClick={loadData}
+                    className="btn btn-primary"
+                >
+                    Retry Connection
+                </button>
             </div>
         );
     }
@@ -83,44 +108,7 @@ const Dashboard = () => {
             {/* Main white card */}
             <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', overflow: 'hidden' }}>
 
-                {/* Header */}
-                <div className="page-header">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-                        <div>
-                            <h1 style={{ fontSize: '1.4rem', fontWeight: 700, margin: 0, color: 'var(--text-dark)' }}>Customer Orders</h1>
-                            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.25rem 0 0' }}>View and manage customer orders and details</p>
-                        </div>
-                    </div>
 
-                    {/* Tab Navigation */}
-                    <div style={{ display: 'flex', gap: '0', marginTop: '1rem', borderBottom: '2px solid var(--border)' }}>
-                        {['dashboard', 'table'].map(tab => (
-                            <button
-                                key={tab}
-                                onClick={() => setActiveTab(tab)}
-                                style={{
-                                    padding: '0.5rem 1.25rem',
-                                    background: 'none',
-                                    border: 'none',
-                                    borderBottom: activeTab === tab ? '2px solid var(--primary)' : '2px solid transparent',
-                                    marginBottom: '-2px',
-                                    color: activeTab === tab ? 'var(--primary)' : 'var(--text-muted)',
-                                    fontWeight: activeTab === tab ? 600 : 400,
-                                    fontSize: '0.875rem',
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '0.4rem',
-                                    transition: 'all 0.2s'
-                                }}
-                            >
-                                {tab === 'dashboard' ? '▦' : '☰'} {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {activeTab === 'dashboard' && (
                     <div className="page-content">
 
                         {orders.length === 0 ? (
@@ -149,8 +137,8 @@ const Dashboard = () => {
                                     onClick={() => navigate('/configure')}
                                     style={{
                                         display: 'flex', alignItems: 'center', gap: '0.5rem',
-                                        padding: '0.5rem 1.2rem', border: '1px solid #2563eb',
-                                        borderRadius: '6px', background: 'white', color: '#2563eb',
+                                        padding: '0.5rem 1.2rem', border: '1px solid var(--primary)',
+                                        borderRadius: '6px', background: 'white', color: 'var(--primary)',
                                         fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer'
                                     }}
                                 >
@@ -182,7 +170,7 @@ const Dashboard = () => {
                         <div className="grid-kpi">
                             {[
                                 { label: 'Total Orders', value: totalOrders },
-                                { label: 'Total Revenue', value: `₹${totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}` },
+                                { label: 'Total Revenue', value: `₹${totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
                                 { label: 'Total Customers', value: totalCustomers },
                                 { label: 'Total Sold Quantity', value: totalQuantity },
                             ].map(({ label, value }) => (
@@ -208,7 +196,7 @@ const Dashboard = () => {
                                             <XAxis dataKey="month" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
                                             <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `₹${v.toLocaleString('en-IN')}`} />
                                             <Tooltip formatter={v => [`₹${v.toLocaleString('en-IN')}`, 'Revenue']} />
-                                            <Bar dataKey="revenue" fill="#2563eb" radius={[3, 3, 0, 0]} />
+                                            <Bar dataKey="revenue" fill="#4f46e5" radius={[3, 3, 0, 0]} />
                                         </BarChart>
                                     </ResponsiveContainer>
                                 ) : (
@@ -288,51 +276,8 @@ const Dashboard = () => {
                             </div>
                         </div>
                         </>
-                        )}
-                    </div>
-                )}
-
-
-                {activeTab === 'table' && (
-                    <div className="page-content">
-                        <div className="table-responsive">
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
-                            <thead>
-                                <tr style={{ backgroundColor: '#f8fafc' }}>
-                                    {['Order ID', 'Customer', 'Product', 'Quantity', 'Total Amount', 'Status'].map(col => (
-                                        <th key={col} style={{ padding: '0.75rem 1rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-muted)', borderBottom: '1px solid var(--border)', fontSize: '0.8rem' }}>{col}</th>
-                                    ))}
-                                    {isAdmin && <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-muted)', borderBottom: '1px solid var(--border)', fontSize: '0.8rem' }}>Owner</th>}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {orders.map((order, i) => (
-                                    <tr key={order._id || i} style={{ borderBottom: '1px solid var(--border)' }}>
-                                        <td style={{ padding: '0.75rem 1rem', color: 'var(--text-muted)' }}>{order.order_id || `ORD-${String(i + 1).padStart(4, '0')}`}</td>
-                                        <td style={{ padding: '0.75rem 1rem' }}>{order.customer_name || '-'}</td>
-                                        <td style={{ padding: '0.75rem 1rem' }}>{order.product}</td>
-                                        <td style={{ padding: '0.75rem 1rem' }}>{order.quantity}</td>
-                                        <td style={{ padding: '0.75rem 1rem' }}>₹ {parseFloat(order.total_amount || 0).toFixed(2)}</td>
-                                        <td style={{ padding: '0.75rem 1rem' }}>
-                                            <span style={{
-                                                padding: '0.2rem 0.6rem',
-                                                borderRadius: '99px',
-                                                fontSize: '0.75rem',
-                                                fontWeight: 500,
-                                                backgroundColor: order.status === 'Completed' ? '#d1fae5' : order.status === 'Pending' ? '#fef3c7' : '#dbeafe',
-                                                color: order.status === 'Completed' ? '#059669' : order.status === 'Pending' ? '#b45309' : '#2563eb',
-                                            }}>
-                                                {order.status || 'Unknown'}
-                                            </span>
-                                        </td>
-                                        {isAdmin && <td style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>{order.owner_email || '-'}</td>}
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                        </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
         </div>
     );

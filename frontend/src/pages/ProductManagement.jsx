@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { productServices } from '../services/api';
 import { Package, Plus, Trash2, Edit2, AlertCircle, CheckCircle, X } from 'lucide-react';
 
+import { useToast } from '../context/ToastContext';
+
 const ProductManagement = () => {
+    const { showToast } = useToast();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
@@ -46,18 +49,18 @@ const ProductManagement = () => {
                     name: formData.name.trim(),
                     price: parseFloat(formData.price) || 0
                 });
-                setMessage({ type: 'success', text: 'Product updated successfully!' });
+                showToast('Product updated successfully!', 'success');
             } else {
                 await productServices.addProduct({
                     name: formData.name.trim(),
                     price: parseFloat(formData.price) || 0
                 });
-                setMessage({ type: 'success', text: 'Product added successfully!' });
+                showToast('Product added successfully!', 'success');
             }
             handleReset();
             fetchProducts();
         } catch (err) {
-            setMessage({ type: 'error', text: err.response?.data?.error || 'Failed to save product' });
+            showToast(err.response?.data?.error || 'Failed to save product', 'error');
         } finally {
             setActionLoading(false);
         }
@@ -66,7 +69,6 @@ const ProductManagement = () => {
     const handleEditClick = (p) => {
         setEditingId(p._id);
         setFormData({ name: p.name, price: p.price || '' });
-        setMessage({ type: '', text: '' });
     };
 
     const handleDeleteProduct = async (id) => {
@@ -74,9 +76,10 @@ const ProductManagement = () => {
 
         try {
             await productServices.deleteProduct(id);
+            showToast('Product deleted successfully!', 'success');
             fetchProducts();
         } catch (err) {
-            alert('Failed to delete product');
+            showToast('Failed to delete product', 'error');
         }
     };
 
@@ -100,7 +103,7 @@ const ProductManagement = () => {
                 <div className="glass-panel" style={{ padding: '2rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                            <div style={{ padding: '0.5rem', backgroundColor: editingId ? '#dbeafe' : 'var(--primary-light)', borderRadius: '8px', color: editingId ? '#2563eb' : 'var(--primary)' }}>
+                            <div style={{ padding: '0.5rem', backgroundColor: editingId ? 'var(--primary-light)' : 'var(--primary-light)', borderRadius: '8px', color: editingId ? 'var(--primary)' : 'var(--primary)' }}>
                                 {editingId ? <Edit2 size={20} /> : <Plus size={20} />}
                             </div>
                             <h2 style={{ fontSize: '1.1rem', fontWeight: 600, margin: 0 }}>
@@ -198,8 +201,8 @@ const ProductManagement = () => {
                                     <button 
                                         onClick={() => handleEditClick(product)}
                                         style={{ 
-                                            padding: '0.45rem', color: '#2563eb', background: 'none', 
-                                            border: '1px solid #dbeafe', cursor: 'pointer', borderRadius: '6px',
+                                            padding: '0.45rem', color: 'var(--primary)', background: 'none', 
+                                            border: '1px solid var(--primary-mid)', cursor: 'pointer', borderRadius: '6px',
                                             display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', fontWeight: 500
                                         }}
                                         onMouseEnter={e => e.currentTarget.style.backgroundColor = '#f0f9ff'}

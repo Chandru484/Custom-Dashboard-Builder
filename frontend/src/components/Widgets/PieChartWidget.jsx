@@ -19,16 +19,16 @@ const PieChartWidget = ({ config, data = [] }) => {
 
     // Visually distinct palette — no two adjacent colors are similar
     const COLORS = [
-        '#2563eb', // blue
-        '#f59e0b', // amber
-        '#10b981', // emerald
-        '#ef4444', // red
-        '#8b5cf6', // violet
-        '#06b6d4', // cyan
-        '#f97316', // orange
-        '#ec4899', // pink
-        '#84cc16', // lime
-        '#6366f1', // indigo
+        '#6366f1', // Indigo 500
+        '#8b5cf6', // Violet 500
+        '#ec4899', // Pink 500
+        '#06b6d4', // Cyan 500
+        '#10b981', // Emerald 500
+        '#f59e0b', // Amber 500
+        '#ef4444', // Red 500
+        '#3b82f6', // Blue 500
+        '#f97316', // Orange 500
+        '#84cc16', // Lime 500
     ];
 
     return (
@@ -51,7 +51,7 @@ const PieChartWidget = ({ config, data = [] }) => {
                 <Tooltip
                     contentStyle={{ borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-md)' }}
                 />
-                {showLegend && <Legend verticalAlign="bottom" height={36} />}
+                {showLegend && <Legend verticalAlign="bottom" align="center" iconType="circle" wrapperStyle={{ paddingTop: '10px' }} />}
             </PieChart>
         </ResponsiveContainer>
     );

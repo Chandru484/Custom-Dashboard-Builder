@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify
-import database
-from bson.objectid import ObjectId
+from models import db, Product
 
 products_bp = Blueprint('products', __name__)
 
@@ -8,11 +7,15 @@ products_bp = Blueprint('products', __name__)
 def get_products():
     """List all products"""
     try:
-        products = []
-        for p in database.products_collection.find():
-            p['_id'] = str(p['_id'])
-            products.append(p)
-        return jsonify(products), 200
+        products = Product.query.all()
+        result = []
+        for p in products:
+            result.append({
+                "_id": str(p.id),
+                "name": p.name,
+                "price": p.price
+            })
+        return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -27,57 +30,58 @@ def add_product():
         return jsonify({"error": "Product name is required"}), 400
         
     try:
-        # Check if exists
-        if database.products_collection.find_one({"name": name}):
+        if Product.query.filter_by(name=name).first():
             return jsonify({"error": "Product already exists"}), 400
             
-        result = database.products_collection.insert_one({
-            "name": name,
-            "price": float(price)
-        })
-        new_p = database.products_collection.find_one({"_id": result.inserted_id})
-        new_p['_id'] = str(new_p['_id'])
-        return jsonify(new_p), 201
+        new_p = Product(name=name, price=float(price))
+        db.session.add(new_p)
+        db.session.commit()
+        
+        return jsonify({
+            "_id": str(new_p.id),
+            "name": new_p.name,
+            "price": new_p.price
+        }), 201
     except Exception as e:
+        db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
 @products_bp.route('/<id>', methods=['PUT'])
 def update_product(id):
     """Update a product"""
     data = request.json or {}
-    update_data = {}
-    if 'name' in data:
-        update_data['name'] = data['name']
-    if 'price' in data:
-        try:
-            update_data['price'] = float(data['price'])
-        except (ValueError, TypeError):
-            return jsonify({"error": "Price must be a number"}), 400
-            
-    if not update_data:
-        return jsonify({"error": "No data to update"}), 400
-        
+    
     try:
-        result = database.products_collection.update_one(
-            {"_id": ObjectId(id)},
-            {"$set": update_data}
-        )
-        if result.matched_count == 0:
+        product = Product.query.get(id)
+        if not product:
             return jsonify({"error": "Product not found"}), 404
             
-        updated = database.products_collection.find_one({"_id": ObjectId(id)})
-        updated['_id'] = str(updated['_id'])
-        return jsonify(updated), 200
+        if 'name' in data:
+            product.name = data['name']
+        if 'price' in data:
+            product.price = float(data['price'])
+            
+        db.session.commit()
+        return jsonify({
+            "_id": str(product.id),
+            "name": product.name,
+            "price": product.price
+        }), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
 @products_bp.route('/<id>', methods=['DELETE'])
 def delete_product(id):
     """Remove a product"""
     try:
-        result = database.products_collection.delete_one({"_id": ObjectId(id)})
-        if result.deleted_count == 0:
+        product = Product.query.get(id)
+        if not product:
             return jsonify({"error": "Product not found"}), 404
+            
+        db.session.delete(product)
+        db.session.commit()
         return jsonify({"message": "Product removed"}), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify({"error": str(e)}), 500

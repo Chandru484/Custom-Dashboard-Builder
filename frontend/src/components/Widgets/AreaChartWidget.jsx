@@ -15,7 +15,7 @@ const AreaChartWidget = ({ config, data = [] }) => {
 
     const xKey = config.xAxis || 'name';
     const yKey = config.yAxis || 'value';
-    const color = config.chartColor || '#3b82f6';
+    const color = config.chartColor || 'var(--primary)';
 
     return (
         <ResponsiveContainer width="100%" height="100%">
@@ -28,9 +28,13 @@ const AreaChartWidget = ({ config, data = [] }) => {
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
                 <XAxis dataKey={xKey} tick={{ fontSize: 12, fill: 'var(--text-muted)' }} />
-                <YAxis tick={{ fontSize: 12, fill: 'var(--text-muted)' }} />
+                <YAxis 
+                    tick={{ fontSize: 12, fill: 'var(--text-muted)' }} 
+                    tickFormatter={val => (yKey === 'total_amount' || yKey === 'unit_price') ? `₹${val.toLocaleString('en-IN')}` : val}
+                />
                 <Tooltip
                     contentStyle={{ borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-md)' }}
+                    formatter={(val) => (yKey === 'total_amount' || yKey === 'unit_price') ? [`₹${val.toLocaleString('en-IN')}`, config.title || yKey] : [val, config.title || yKey]}
                 />
                 <Area type="monotone" dataKey={yKey} stroke={color} fillOpacity={1} fill={`url(#color${yKey})`} />
             </AreaChart>

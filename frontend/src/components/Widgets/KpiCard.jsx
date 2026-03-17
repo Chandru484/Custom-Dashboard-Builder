@@ -12,10 +12,10 @@ const KpiCard = ({ config, data = [] }) => {
 
     const val = aggregateKpi(data, config);
 
-    // Format value (e.g. prefix with $ if it's total_amount)
-    let valueStr = val.toLocaleString();
+    // Format value (e.g. prefix with ₹ if it's total_amount)
+    let valueStr = val.toLocaleString('en-IN');
     if (config.yAxis === 'total_amount' || config.yAxis === 'unit_price') {
-        valueStr = `₹${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        valueStr = `₹${val.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
     const title = config.title || 'KPI Value';

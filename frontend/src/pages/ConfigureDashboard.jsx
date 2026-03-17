@@ -23,16 +23,19 @@ import { aggregateData } from '../services/dataEngine';
 
 // Widget Types from Requirement (shortened default heights)
 const WIDGET_TYPES = [
-    { title: 'Bar Chart', type: 'BAR_CHART', defaultW: 5, defaultH: 4 },
-    { title: 'Line Chart', type: 'LINE_CHART', defaultW: 5, defaultH: 4 },
-    { title: 'Pie Chart', type: 'PIE_CHART', defaultW: 4, defaultH: 3 },
-    { title: 'Area Chart', type: 'AREA_CHART', defaultW: 5, defaultH: 4 },
-    { title: 'Scatter Plot', type: 'SCATTER_PLOT', defaultW: 5, defaultH: 4 },
-    { title: 'Table', type: 'TABLE', defaultW: 4, defaultH: 4 },
-    { title: 'KPI Value', type: 'KPI', defaultW: 2, defaultH: 2 }
+    { title: 'Bar Chart', type: 'BAR_CHART', defaultW: 6, defaultH: 4 },
+    { title: 'Line Chart', type: 'LINE_CHART', defaultW: 6, defaultH: 4 },
+    { title: 'Pie Chart', type: 'PIE_CHART', defaultW: 6, defaultH: 4 },
+    { title: 'Area Chart', type: 'AREA_CHART', defaultW: 6, defaultH: 4 },
+    { title: 'Scatter Plot', type: 'SCATTER_PLOT', defaultW: 6, defaultH: 4 },
+    { title: 'Table', type: 'TABLE', defaultW: 6, defaultH: 4 },
+    { title: 'KPI Value', type: 'KPI', defaultW: 4, defaultH: 2 }
 ];
 
+import { useToast } from '../context/ToastContext';
+
 const ConfigureDashboard = () => {
+    const { showToast } = useToast();
     const windowWidth = useWindowWidth();
     const isMobileOrTablet = windowWidth <= 1024;
     const navigate = useNavigate();
@@ -47,6 +50,14 @@ const ConfigureDashboard = () => {
         loadExistingConfig();
         fetchOrders();
     }, []);
+
+    useEffect(() => {
+        // Trigger a fake resize event when layout switches or sidebar opens
+        const timer = setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+        }, 100);
+        return () => clearTimeout(timer);
+    }, [isMobileOrTablet, activeWidget]);
 
     const fetchOrders = async () => {
         try {
@@ -74,10 +85,10 @@ const ConfigureDashboard = () => {
         setSaving(true);
         try {
             await dashboardServices.saveConfig(widgets);
-            alert("Dashboard saved successfully!");
+            showToast("Dashboard saved successfully!", "success");
             navigate('/');
         } catch (error) {
-            alert("Failed to save dashboard.");
+            showToast("Failed to save dashboard.", "error");
             console.error(error);
         } finally {
             setSaving(false);
@@ -161,15 +172,19 @@ const ConfigureDashboard = () => {
                                         <div
                                             key={widget.type}
                                             className="widget-library-item"
-                                            style={{ padding: '0.5rem 1rem', cursor: 'grab', display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.9rem', color: 'var(--text-muted)', transition: 'all 0.2s', borderRadius: '6px' }}
+                                            style={{ padding: '0.5rem 1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.9rem', color: 'var(--text-muted)', transition: 'all 0.2s', borderRadius: '6px' }}
                                             draggable={true}
                                             unselectable="on"
                                             onDragStart={(e) => {
                                                 setDraggingWidget(widget);
-                                                // Required for some browsers to initiate drag
                                                 e.dataTransfer.setData("text/plain", "");
                                             }}
-                                            onClick={() => addWidget(widget)}
+                                            onClick={(e) => {
+                                                // Prevent addWidget if it was a drag attempt
+                                                if (e.detail !== 0) { // detailed check to see if it was a real click
+                                                    addWidget(widget);
+                                                }
+                                            }}
                                         >
                                             <span style={{ opacity: 0.5 }}>⠿</span>
                                             <span>{widget.title}</span>
@@ -187,14 +202,16 @@ const ConfigureDashboard = () => {
                                         <div
                                             key={widget.type}
                                             className="widget-library-item"
-                                            style={{ padding: '0.5rem 1rem', cursor: 'grab', display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.9rem', color: 'var(--text-muted)', transition: 'all 0.2s', borderRadius: '6px' }}
+                                            style={{ padding: '0.5rem 1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.9rem', color: 'var(--text-muted)', transition: 'all 0.2s', borderRadius: '6px' }}
                                             draggable={true}
                                             unselectable="on"
                                             onDragStart={(e) => {
                                                 setDraggingWidget(widget);
                                                 e.dataTransfer.setData("text/plain", "");
                                             }}
-                                            onClick={() => addWidget(widget)}
+                                            onClick={(e) => {
+                                                if (e.detail !== 0) addWidget(widget);
+                                            }}
                                         >
                                             <span style={{ opacity: 0.5 }}>⠿</span>
                                             <span>{widget.title}</span>
@@ -212,14 +229,16 @@ const ConfigureDashboard = () => {
                                         <div
                                             key={widget.type}
                                             className="widget-library-item"
-                                            style={{ padding: '0.5rem 1rem', cursor: 'grab', display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.9rem', color: 'var(--text-muted)', transition: 'all 0.2s', borderRadius: '6px' }}
+                                            style={{ padding: '0.5rem 1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.9rem', color: 'var(--text-muted)', transition: 'all 0.2s', borderRadius: '6px' }}
                                             draggable={true}
                                             unselectable="on"
                                             onDragStart={(e) => {
                                                 setDraggingWidget(widget);
                                                 e.dataTransfer.setData("text/plain", "");
                                             }}
-                                            onClick={() => addWidget(widget)}
+                                            onClick={(e) => {
+                                                if (e.detail !== 0) addWidget(widget);
+                                            }}
                                         >
                                             <span style={{ opacity: 0.5 }}>⠿</span>
                                             <span>{widget.title}</span>
@@ -231,8 +250,8 @@ const ConfigureDashboard = () => {
                     </div>
 
                     {/* Center Canvas */}
-                    <div className="config-main-canvas">
-                        <div style={{ flex: 1, position: 'relative' }}>
+                    <div className="config-main-canvas" style={{ width: '100%', minWidth: 0 }}>
+                        <div style={{ flex: 1, position: 'relative', width: '100%' }}>
 
                         {/* ── Empty canvas state ── */}
                         {widgets.length === 0 && (
@@ -247,7 +266,7 @@ const ConfigureDashboard = () => {
                                     alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem'
                                 }}>
                                     <svg width="36" height="36" viewBox="0 0 24 24" fill="none"
-                                        stroke="#2563eb" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                        stroke="var(--primary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                                         <rect x="3" y="3" width="18" height="18" rx="2" />
                                         <path d="M3 9h18M9 21V9" />
                                     </svg>
@@ -262,15 +281,17 @@ const ConfigureDashboard = () => {
                         )}
 
                         <ResponsiveGridLayoutWithWidth
+                            key={`grid-${isMobileOrTablet}`}
                             className="layout"
+                            measureBeforeMount={true}
                             layouts={{
                                 lg: widgets.map(w => ({ i: w.id, ...w.grid })),
-                                md: widgets.map(w => ({ i: w.id, x: w.grid.x, y: w.grid.y, w: Math.min(w.grid.w, 8), h: w.grid.h })),
-                                sm: widgets.map(w => ({ i: w.id, x: 0, y: w.grid.y, w: Math.min(w.grid.w, 4), h: w.grid.h })),
+                                md: widgets.map(w => ({ i: w.id, x: 0, y: w.grid.y, w: 8, h: w.grid.h })),
+                                sm: widgets.map(w => ({ i: w.id, x: 0, y: w.grid.y, w: 1, h: w.grid.h })),
                             }}
-                            breakpoints={{ lg: 1025, md: 641, sm: 0 }}
-                            cols={{ lg: 12, md: 8, sm: 4 }}
-                            rowHeight={50}
+                            breakpoints={{ lg: 1200, md: 800, sm: 0 }}
+                            cols={{ lg: 12, md: 8, sm: 1 }}
+                            rowHeight={windowWidth < 1024 ? 45 : 50}
                             onLayoutChange={(currentLayout) => handleLayoutChange(currentLayout)}
                             isDraggable={true}
                             isResizable={true}
@@ -283,6 +304,7 @@ const ConfigureDashboard = () => {
                                     id,
                                     type: draggingWidget.type,
                                     title: 'Untitled',
+                                    // Use precise coordinates from 'item'
                                     grid: { x: item.x, y: item.y, w: draggingWidget.defaultW, h: draggingWidget.defaultH },
                                     config: {}
                                 };
@@ -298,18 +320,20 @@ const ConfigureDashboard = () => {
                         >
                         {widgets.map(widget => (
                             <div key={widget.id} style={{ display: 'flex', flexDirection: 'column', padding: '1rem', backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', marginBottom: '1rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', marginBottom: '1rem', flexShrink: 0 }}>
                                     <h4 style={{ margin: 0 }}>{widget.title || widget.type}</h4>
                                     <div style={{ display: 'flex', gap: '0.5rem' }}>
                                         <button className="btn-icon non-draggable" onMouseDown={(e) => e.stopPropagation()} onClick={() => setActiveWidget(widget)}>⚙️</button>
                                         <button className="btn-icon text-danger non-draggable" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); removeWidget(widget.id); }}>🗑️</button>
                                     </div>
                                 </div>
-                                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                                <div className="widget-content-wrapper" style={{ flex: 1, minHeight: 0, position: 'relative', width: '100%', overflow: 'hidden' }}>
                                     {loadingData ? (
-                                        <span className="text-muted">Loading Data...</span>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                                            <span className="text-muted">Loading Data...</span>
+                                        </div>
                                     ) : (
-                                        <div style={{ width: '100%', height: '100%', padding: '0.5rem' }}>
+                                        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
                                             <WidgetRenderer 
                                                 widget={widget} 
                                                 data={aggregateData(orders, widget.config, 'All Time')}
@@ -376,12 +400,12 @@ const ConfigureDashboard = () => {
             )}
 
 
-            {/* Bottom Action Bar at the base of the white box */}
-            <div style={{ padding: '1rem 1.5rem', display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap', gap: '1rem', backgroundColor: 'white', borderRadius: '0 0 4px 4px' }}>
+            {/* Sticky Action Footer */}
+            <div className="config-sticky-footer">
                 <button 
                     className="btn btn-outline" 
                     onClick={() => navigate('/')} 
-                    style={{ borderRadius: '4px', backgroundColor: 'white', borderColor: '#2563eb', color: '#2563eb', padding: '0.5rem 1.5rem' }}
+                    style={{ borderRadius: '4px', backgroundColor: 'white', borderColor: 'var(--primary)', color: 'var(--primary)', padding: '0.5rem 1.5rem' }}
                 >
                     Cancel
                 </button>
@@ -389,7 +413,7 @@ const ConfigureDashboard = () => {
                     className="btn btn-primary" 
                     onClick={handleSave} 
                     disabled={saving} 
-                    style={{ borderRadius: '4px', backgroundColor: '#2563eb', borderColor: '#2563eb', color: 'white', padding: '0.5rem 1.5rem' }}
+                    style={{ borderRadius: '4px', backgroundColor: 'var(--primary)', borderColor: 'var(--primary)', color: 'white', padding: '0.5rem 1.5rem' }}
                 >
                     {saving ? 'Saving...' : 'Save'}
                 </button>

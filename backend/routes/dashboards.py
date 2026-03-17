@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify
-import database
-from bson.objectid import ObjectId
+from models import db, DashboardConfig
 
 dashboards_bp = Blueprint('dashboards', __name__)
 
@@ -9,13 +8,16 @@ def get_dashboard_config():
     """Fetch the saved dashboard configuration"""
     try:
         user_id = "guest_user"
-        config = database.dashboards_collection.find_one({"user_id": user_id})
+        config = DashboardConfig.query.filter_by(user_id=user_id).first()
         
         if not config:
             return jsonify({"widgets": []}), 200
             
-        config['_id'] = str(config['_id'])
-        return jsonify(config), 200
+        return jsonify({
+            "_id": str(config.id),
+            "user_id": config.user_id,
+            "widgets": config.widgets
+        }), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -29,23 +31,17 @@ def save_dashboard_config():
         return jsonify({"error": "Missing 'widgets' array in payload"}), 400
         
     try:
-        # Check if a config exists
-        existing_config = database.dashboards_collection.find_one({"user_id": user_id})
+        config = DashboardConfig.query.filter_by(user_id=user_id).first()
         
-        if existing_config:
-            # Update existing
-            database.dashboards_collection.update_one(
-                {"_id": existing_config["_id"]},
-                {"$set": {"widgets": data["widgets"]}}
-            )
-            return jsonify({"message": "Dashboard updated successfully"}), 200
+        if config:
+            config.widgets = data["widgets"]
         else:
-            # Insert new
-            database.dashboards_collection.insert_one({
-                "user_id": user_id,
-                "widgets": data["widgets"]
-            })
-            return jsonify({"message": "Dashboard saved successfully"}), 201
+            config = DashboardConfig(user_id=user_id, widgets=data["widgets"])
+            db.session.add(config)
+            
+        db.session.commit()
+        return jsonify({"message": "Dashboard saved successfully"}), 200
             
     except Exception as e:
+        db.session.rollback()
         return jsonify({"error": str(e)}), 500

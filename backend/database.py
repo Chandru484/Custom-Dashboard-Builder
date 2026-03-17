@@ -1,14 +1,9 @@
 import os
 import sys
-import certifi
-from pymongo import MongoClient
-from dotenv import load_dotenv
+from flask_sqlalchemy import SQLAlchemy
+from models import db, Product
 
-# Load .env file
-load_dotenv()
-
-# Global variables to hold db and collections
-db = None
+# COLLECTIONS placeholders (to be updated in routes to use models)
 orders_collection = None
 dashboards_collection = None
 users_collection = None
@@ -16,47 +11,34 @@ products_collection = None
 
 def init_db(app):
     """
-    Initialize MongoDB Atlas connection.
-    Reads MONGO_URI and DB_NAME from the .env file.
-    Uses certifi CA bundle to fix SSL handshake issues on Windows.
+    Initialize MySQL connection using SQLAlchemy.
+    Reads MYSQL_URI from the .env file.
     """
-    global db, orders_collection, dashboards_collection, users_collection, products_collection
+    MYSQL_URI = os.getenv("MYSQL_URI", "mysql+mysqlconnector://root:root@localhost/dashboard_builder")
+    
+    app.config['SQLALCHEMY_DATABASE_URI'] = MYSQL_URI
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
-    DB_NAME   = os.getenv("DB_NAME", "dashboard_builder")
+    db.init_app(app)
 
-    try:
-        client = MongoClient(
-            MONGO_URI,
-            serverSelectionTimeoutMS=20000,
-            tlsCAFile=certifi.where(),          # Use certifi's CA bundle
-        )
-
-        # Test connection
-        client.admin.command('ping')
-        print(f"[SUCCESS] Connected to MongoDB Atlas — database: '{DB_NAME}'")
-
-        # Map to our globals
-        db = client[DB_NAME]
-        orders_collection     = db["orders"]
-        dashboards_collection = db["dashboards"]
-        users_collection      = db["users"]
-        products_collection   = db["products"]
-        
-        # Auto-seed products if empty
-        if products_collection.count_documents({}) == 0:
-            print("[INFO] Products collection is empty. Seeding default products...")
-            default_products = [
-                {"name": "VoIP Corporate Package", "price": 450.0},
-                {"name": "Business Internet 500 Mbps", "price": 800.0},
-                {"name": "Fiber Internet 1 Gbps", "price": 1200.0},
-                {"name": "5G Unlimited Mobile Plan", "price": 300.0},
-                {"name": "Fiber Internet 300 Mbps", "price": 500.0}
-            ]
-            products_collection.insert_many(default_products)
-            print(f"[SUCCESS] Seeded {len(default_products)} products.")
-
-    except Exception as e:
-        print(f"[ERROR] Failed to connect to MongoDB: {e}")
-        print("Please check your MONGO_URI in the .env file.")
-        sys.exit(1)
+    with app.app_context():
+        try:
+            db.create_all()
+            print("[SUCCESS] Connected to MySQL and tables created.")
+            
+            # Auto-seed products if empty
+            if Product.query.count() == 0:
+                print("[INFO] Products table is empty. Seeding default products...")
+                default_products = [
+                    Product(name="VoIP Corporate Package", price=450.0),
+                    Product(name="Business Internet 500 Mbps", price=800.0),
+                    Product(name="Fiber Internet 1 Gbps", price=1200.0),
+                    Product(name="5G Unlimited Mobile Plan", price=300.0),
+                    Product(name="Fiber Internet 300 Mbps", price=500.0)
+                ]
+                db.session.add_all(default_products)
+                db.session.commit()
+                print(f"[SUCCESS] Seeded {len(default_products)} products.")
+        except Exception as e:
+            print(f"[ERROR] Failed to connect to MySQL: {e}")
+            sys.exit(1)

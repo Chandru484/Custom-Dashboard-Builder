@@ -64,7 +64,7 @@ const MultiSelect = ({ options, value = [], onChange }) => {
                 <div style={{ position:'absolute', top:'100%', left:0, right:0, backgroundColor:'white', border:'1px solid #d1d5db', borderRadius:'6px', zIndex:50, boxShadow:'0 4px 12px rgba(0,0,0,0.1)', maxHeight:'180px', overflowY:'auto' }}>
                     {options.map(opt => (
                         <label key={opt.value} style={{ display:'flex', alignItems:'center', gap:'0.5rem', padding:'0.4rem 0.75rem', cursor:'pointer', fontSize:'0.8rem', backgroundColor: selected.has(opt.value) ? '#f0fdf4' : 'transparent' }}>
-                            <input type="checkbox" checked={selected.has(opt.value)} onChange={() => toggle(opt.value)} style={{ accentColor:'#2563eb' }} />
+                            <input type="checkbox" checked={selected.has(opt.value)} onChange={() => toggle(opt.value)} style={{ accentColor:'var(--primary)' }} />
                             {opt.label}
                         </label>
                     ))}
@@ -101,7 +101,7 @@ const FilterSection = ({ filters = [], onChange }) => {
             ))}
             <button
                 onClick={add}
-                style={{ fontSize:'0.78rem', color:'#2563eb', background:'none', border:'none', cursor:'pointer', padding:0, fontWeight:600 }}
+                style={{ fontSize:'0.78rem', color:'var(--primary)', background:'none', border:'none', cursor:'pointer', padding:0, fontWeight:600 }}
             >
                 + Add filter
             </button>
@@ -139,7 +139,7 @@ const WidgetConfigPanel = ({ widget, onUpdate, onClose, hideHeader = false }) =>
             onClick={() => setTab(id)}
             style={{
                 flex:1, padding:'0.5rem', border:'none', cursor:'pointer', fontSize:'0.8rem', fontWeight:600, borderRadius:'4px',
-                backgroundColor: tab === id ? '#2563eb' : 'transparent',
+                backgroundColor: tab === id ? 'var(--primary)' : 'transparent',
                 color: tab === id ? 'white' : '#6b7280',
                 transition:'all 0.15s'
             }}
@@ -251,7 +251,7 @@ const WidgetConfigPanel = ({ widget, onUpdate, onClose, hideHeader = false }) =>
                                         id="applyFilter"
                                         checked={!!local.config?.applyFilter}
                                         onChange={e => set('config.applyFilter', e.target.checked)}
-                                        style={{ accentColor:'#2563eb', width:'14px', height:'14px' }}
+                                        style={{ accentColor:'var(--primary)', width:'14px', height:'14px' }}
                                     />
                                     <label htmlFor="applyFilter" style={{ fontSize:'0.8rem', color:'#374151', fontWeight:500, cursor:'pointer' }}>Apply filter</label>
                                 </div>

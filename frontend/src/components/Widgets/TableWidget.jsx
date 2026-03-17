@@ -28,8 +28,8 @@ const TableWidget = ({ config, data = [], style = {} }) => {
                         {renderData.map((row, idx) => (
                             <tr key={idx} style={{ borderBottom: '1px solid var(--border)' }}>
                                 <td style={{ padding: '0.75rem 0.5rem' }}>{row.product || '-'}</td>
-                                <td style={{ padding: '0.75rem 0.5rem' }}>{row.qty || '-'}</td>
-                                <td style={{ padding: '0.75rem 0.5rem' }}>${row.total_amount || '-'}</td>
+                                <td style={{ padding: '0.75rem 0.5rem' }}>${row.qty || '-'}</td>
+                                <td style={{ padding: '0.75rem 0.5rem' }}>₹{row.total_amount || '-'}</td>
                                 <td style={{ padding: '0.75rem 0.5rem' }}>
                                     <span style={{
                                         padding: '0.25rem 0.5rem',

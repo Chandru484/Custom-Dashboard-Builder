@@ -35,8 +35,8 @@ const TopNavigation = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
           <span style={{
             fontWeight: 800,
-            fontSize: '1.15rem',
-            color: 'var(--primary)',
+            fontSize: '1.2rem',
+            color: '#4f46e5',
             letterSpacing: '-0.04em',
             flexShrink: 0,
           }}>Dashboard Builder</span>
@@ -54,10 +54,10 @@ const TopNavigation = () => {
                     padding: '0.35rem 0.75rem',
                     borderRadius: 'var(--radius-md)',
                     fontSize: '0.875rem',
-                    fontWeight: active ? 600 : 450,
-                    color: active ? 'var(--primary)' : 'var(--text-muted)',
-                    background: active ? 'var(--primary-light)' : 'transparent',
-                    transition: 'all 0.15s',
+                      fontWeight: active ? 600 : 500,
+                      color: active ? '#4f46e5' : '#64748b',
+                      background: active ? '#eef2ff' : 'transparent',
+                      transition: 'all 0.15s',
                     whiteSpace: 'nowrap',
                   }}
                 >
@@ -73,12 +73,49 @@ const TopNavigation = () => {
           {location.pathname !== '/configure' && (
             <Link
               to="/configure"
-              className="btn btn-primary nav-cta-desktop"
+              className="btn btn-primary nav-main-cta"
               style={{ textDecoration: 'none', fontSize: '0.8rem', padding: '0.45rem 1rem' }}
             >
-              Configure Dashboard
+              <span className="cta-text-desktop">Configure Dashboard</span>
+              <span className="cta-text-mobile">Configure</span>
             </Link>
           )}
+
+          {/* Sample Admin User Button (No functionality) */}
+          <div 
+            className="nav-admin-btn"
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.75rem', 
+              padding: '0.35rem 0.65rem', 
+              borderRadius: '99px',
+              border: '1px solid var(--border)',
+              backgroundColor: 'white',
+              cursor: 'default',
+              userSelect: 'none'
+            }}
+            title="Logged in as Administrator"
+          >
+            <div style={{
+              width: '28px',
+              height: '28px',
+              borderRadius: '50%',
+              backgroundColor: 'var(--primary)',
+              color: 'white',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '0.75rem',
+              fontWeight: 700
+            }}>
+              AD
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column' }} className="nav-user-info">
+              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#1f2937', lineHeight: 1.2 }}>Admin User</span>
+              <span style={{ fontSize: '0.65rem', color: '#10b981', fontWeight: 600 }}>Active</span>
+            </div>
+          </div>
 
           {/* Hamburger — shown on mobile via CSS */}
           <button
@@ -105,18 +142,6 @@ const TopNavigation = () => {
             {label}
           </Link>
         ))}
-        {location.pathname !== '/configure' && (
-          <div className="nav-mobile-cta">
-            <Link
-              to="/configure"
-              className="btn btn-primary"
-              style={{ textDecoration: 'none', fontSize: '0.875rem', width: '100%', justifyContent: 'center' }}
-              onClick={() => setMobileOpen(false)}
-            >
-              Configure Dashboard
-            </Link>
-          </div>
-        )}
       </div>
     </nav>
   );
@@ -124,29 +149,38 @@ const TopNavigation = () => {
 
 /* Hide desktop links on mobile & hamburger on desktop */
 const responsiveNavStyle = `
-  @media (max-width: 640px) {
+  @media (max-width: 1024px) {
     .nav-desktop-links { display: none !important; }
-    .nav-cta-desktop   { display: none !important; }
+    .cta-text-desktop  { display: none !important; }
+    .cta-text-mobile   { display: inline !important; }
     .nav-hamburger     { display: flex !important; }
+    .nav-main-cta      { padding: 0.4rem 0.75rem !important; font-size: 0.75rem !important; }
+  }
+  @media (min-width: 1025px) {
+    .cta-text-mobile { display: none !important; }
   }
 `;
 
+import { ToastProvider } from './context/ToastContext';
+
 function App() {
   return (
-    <BrowserRouter>
-      <style>{responsiveNavStyle}</style>
-      <div className="app-container">
-        <TopNavigation />
-        <main style={{ padding: '1.5rem' }}>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/orders" element={<CustomerOrders />} />
-            <Route path="/configure" element={<ConfigureDashboard />} />
-            <Route path="/products" element={<ProductManagement />} />
-          </Routes>
-        </main>
-      </div>
-    </BrowserRouter>
+    <ToastProvider>
+      <BrowserRouter>
+        <style>{responsiveNavStyle}</style>
+        <div className="app-container">
+          <TopNavigation />
+          <main style={{ padding: '1.5rem' }}>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/orders" element={<CustomerOrders />} />
+              <Route path="/configure" element={<ConfigureDashboard />} />
+              <Route path="/products" element={<ProductManagement />} />
+            </Routes>
+          </main>
+        </div>
+      </BrowserRouter>
+    </ToastProvider>
   );
 }
 

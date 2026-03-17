@@ -44,7 +44,7 @@ const CustomTooltip = ({ active, payload }) => {
 const ScatterPlotWidget = ({ config = {}, data = [] }) => {
     const xField = config.xAxis || 'quantity';
     const yField = config.yAxis || 'total_amount';
-    const color  = '#2563eb';
+    const color  = 'var(--primary)';
 
     const scatterData = buildScatterData(data, xField, yField);
 
