@@ -2,15 +2,6 @@
 
 A world-class, full-stack ERP-style dashboard for managing customer orders and viewing real-time analytics. Built with a focus on **security**, **visual excellence**, and **unmatched performance**.
 
-## 🎥 Workflow Demonstration
-
-![Project Workflow](./screenshots/workflow.webp)
-
-> [!TIP]
-> [Watch High-Resolution MP4](https://github.com/Chandru484/Custom-Dashboard-Builder/blob/main/screenshots/workflow.mp4?raw=true)
-
----
-
 ![Desktop Overview](screenshots/dashboard_extended.png)
 
 ## 🌟 Visual Overview
