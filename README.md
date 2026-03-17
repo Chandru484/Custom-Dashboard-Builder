@@ -83,16 +83,10 @@ npm install
 npm run dev
 ```
 
-## 🧪 Credentials for Testing
-- **Standard User:** `user@halleyx.com` / `password123`
-- **Admin User:** `admin@halleyx.com` / `admin123`
-
----
 
 ## 📁 Project Structure
 
 - `📂 /backend`: Flask API logic, models, and authentication.
 - `📂 /frontend`: React source code, custom hooks, and styles.
 - `📂 /screenshots`: High-resolution visual assets.
-- `📂 /brain`: Development logs and implementation history.
 
