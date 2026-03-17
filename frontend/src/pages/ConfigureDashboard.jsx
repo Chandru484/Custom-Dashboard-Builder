@@ -327,7 +327,7 @@ const ConfigureDashboard = () => {
                                         <button className="btn-icon text-danger non-draggable" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); removeWidget(widget.id); }}>🗑️</button>
                                     </div>
                                 </div>
-                                <div className="widget-content-wrapper" style={{ flex: 1, minHeight: 0, position: 'relative', width: '100%', overflow: 'hidden' }}>
+                                <div className="widget-content-wrapper" style={{ flex: 1, minHeight: 0, position: 'relative', width: '100%', overflow: 'visible' }}>
                                     {loadingData ? (
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
                                             <span className="text-muted">Loading Data...</span>

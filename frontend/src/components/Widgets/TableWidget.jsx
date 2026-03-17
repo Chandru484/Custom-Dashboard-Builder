@@ -10,11 +10,8 @@ const TableWidget = ({ config, data = [], style = {} }) => {
 
     return (
         <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <h4 style={{ margin: '0 0 1rem 0', padding: '0 1rem', color: 'var(--text-dark)' }}>
-                {config?.title || 'Data Table'}
-            </h4>
 
-            <div style={{ flex: 1, overflowY: 'auto', padding: '0 1rem' }}>
+            <div className="non-draggable" style={{ flex: 1, overflowY: 'auto', padding: '0 1rem' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize }}>
                     <thead style={{ position: 'sticky', top: 0, backgroundColor: headerBg }}>
                         <tr>
@@ -28,8 +25,8 @@ const TableWidget = ({ config, data = [], style = {} }) => {
                         {renderData.map((row, idx) => (
                             <tr key={idx} style={{ borderBottom: '1px solid var(--border)' }}>
                                 <td style={{ padding: '0.75rem 0.5rem' }}>{row.product || '-'}</td>
-                                <td style={{ padding: '0.75rem 0.5rem' }}>${row.qty || '-'}</td>
-                                <td style={{ padding: '0.75rem 0.5rem' }}>₹{row.total_amount || '-'}</td>
+                                <td style={{ padding: '0.75rem 0.5rem' }}>{row.qty || '-'}</td>
+                                <td style={{ padding: '0.75rem 0.5rem' }}>₹{parseFloat(row.total_amount || 0).toFixed(2)}</td>
                                 <td style={{ padding: '0.75rem 0.5rem' }}>
                                     <span style={{
                                         padding: '0.25rem 0.5rem',
