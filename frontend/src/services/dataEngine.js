@@ -54,11 +54,16 @@ export const filterDataByDate = (data, dateFilter) => {
 export const aggregateData = (data, config) => {
     if (!data || data.length === 0) return [];
 
+    // Filter out restricted statuses globally
+    const filteredData = data.filter(item => 
+        item.status !== 'Shipped' && item.status !== 'Cancelled'
+    );
+
     const { xAxis = 'product', yAxis = 'total_amount', aggregation = 'SUM' } = config;
 
     // Grouping for Charts
     if (xAxis) {
-        const grouped = data.reduce((acc, item) => {
+        const grouped = filteredData.reduce((acc, item) => {
             const key = item[xAxis] || 'Unknown';
             if (!acc[key]) {
                 acc[key] = { count: 0, sum: 0, items: [] };
@@ -88,7 +93,7 @@ export const aggregateData = (data, config) => {
         });
     }
 
-    return data;
+    return filteredData;
 };
 
 /**
@@ -97,16 +102,21 @@ export const aggregateData = (data, config) => {
 export const aggregateKpi = (data, config) => {
     if (!data || data.length === 0) return 0;
 
+    // Filter out restricted statuses globally
+    const filteredData = data.filter(item => 
+        item.status !== 'Shipped' && item.status !== 'Cancelled'
+    );
+
     const { yAxis = 'total_amount', aggregation = 'SUM' } = config;
 
     let total = 0;
-    data.forEach(item => {
+    filteredData.forEach(item => {
         total += parseFloat(item[yAxis]) || 0;
     });
 
     if (aggregation === 'SUM') return Number(total.toFixed(2));
-    if (aggregation === 'AVG') return Number((total / data.length).toFixed(2));
-    if (aggregation === 'COUNT') return data.length;
+    if (aggregation === 'AVG') return Number((total / filteredData.length).toFixed(2));
+    if (aggregation === 'COUNT') return filteredData.length;
 
     return 0;
 };
