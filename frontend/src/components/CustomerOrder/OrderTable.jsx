@@ -69,7 +69,7 @@ const OrderTable = () => {
                 </button>
             </div>
 
-            <div style={{ overflowX: 'auto', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+            <div className="table-responsive" style={{ borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
                     <thead style={{ backgroundColor: '#f1f5f9' }}>
                         <tr>

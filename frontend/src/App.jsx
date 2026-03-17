@@ -81,41 +81,6 @@ const TopNavigation = () => {
             </Link>
           )}
 
-          {/* Sample Admin User Button (No functionality) */}
-          <div 
-            className="nav-admin-btn"
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '0.75rem', 
-              padding: '0.35rem 0.65rem', 
-              borderRadius: '99px',
-              border: '1px solid var(--border)',
-              backgroundColor: 'white',
-              cursor: 'default',
-              userSelect: 'none'
-            }}
-            title="Logged in as Administrator"
-          >
-            <div style={{
-              width: '28px',
-              height: '28px',
-              borderRadius: '50%',
-              backgroundColor: 'var(--primary)',
-              color: 'white',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '0.75rem',
-              fontWeight: 700
-            }}>
-              AD
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column' }} className="nav-user-info">
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#1f2937', lineHeight: 1.2 }}>Admin User</span>
-              <span style={{ fontSize: '0.65rem', color: '#10b981', fontWeight: 600 }}>Active</span>
-            </div>
-          </div>
 
           {/* Hamburger — shown on mobile via CSS */}
           <button
