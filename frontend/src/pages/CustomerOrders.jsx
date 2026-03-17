@@ -157,18 +157,16 @@ const CustomerOrders = () => {
     );
 
     return (
-        <div style={{ backgroundColor: '#f8fafc', minHeight: 'calc(100vh - 60px)', padding: '1.5rem' }}>
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden', border: '1px solid var(--border)' }}>
+        <div className="page-container">
+            <div className="card-container">
 
                 {/* ── Filter & Utility Bar ────────────────── */}
                 <div className="order-filter-bar">
                     <div className="order-filter-group">
-                        <div style={{ display: 'flex', alignItems: 'center', backgroundColor: '#f1f5f9', borderRadius: '8px', padding: '0.25rem 0.75rem', marginRight: '1rem', border: '1px solid var(--border)' }}>
-                            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginRight: '0.5rem' }}>Date</span>
+                        <div className="date-filter-select">
                             <select 
                                 value={dateFilter}
                                 onChange={(e) => setDateFilter(e.target.value)}
-                                style={{ border: 'none', background: 'none', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-dark)', cursor: 'pointer', outline: 'none' }}
                             >
                                 <option>All time</option>
                                 <option>Last 7 days</option>

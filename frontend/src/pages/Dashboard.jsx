@@ -104,9 +104,8 @@ const Dashboard = () => {
     }
 
     return (
-        <div style={{ backgroundColor: '#f0f2f4', minHeight: 'calc(100vh - 60px)' }}>
-            {/* Main white card */}
-            <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', overflow: 'hidden' }}>
+        <div className="page-container">
+            <div className="card-container">
 
 
                     <div className="page-content">
