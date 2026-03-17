@@ -2,19 +2,37 @@
 
 A world-class, full-stack ERP-style dashboard for managing customer orders and viewing real-time analytics. Built with a focus on **security**, **visual excellence**, and **unmatched performance**.
 
-![Desktop View](file:///d:/project/Halleyx/screenshots/dashboard_extended.png)
+![Desktop Overview](file:///d:/project/Halleyx/screenshots/dashboard_extended.png)
 
 ## 🌟 Visual Overview
 
-| **Dynamic Dashboard** | **Order Management** |
-|:---:|:---:|
-| ![Configure Dashboard](file:///d:/project/Halleyx/screenshots/configure.png) | ![Create Order](file:///d:/project/Halleyx/screenshots/create_order.png) |
-| *Real-time analytics and drag-and-drop customization.* | *Streamlined order creation and management.* |
+### 🖥️ Desktop Experience
 
-| **Mobile Excellence** | **Responsive Design** |
+| **Main Dashboard** | **Product Management** |
 |:---:|:---:|
-| ![Mobile Dashboard](file:///d:/project/Halleyx/screenshots/mobile_dashboard.png) | ![Mobile Settings](file:///d:/project/Halleyx/screenshots/settings_mobile.png) |
-| *Intuitive experience on small screens.* | *Pixel-perfect responsiveness across all devices.* |
+| ![Dashboard](file:///d:/project/Halleyx/screenshots/dashboard_extended.png) | ![Manage Products](file:///d:/project/Halleyx/screenshots/manage_products.png) |
+
+| **Customer Orders** | **Order Creation** |
+|:---:|:---:|
+| ![Customer Orders](file:///d:/project/Halleyx/screenshots/customer_orders.png) | ![Create Order](file:///d:/project/Halleyx/screenshots/create_order.png) |
+
+| **Dashboard Customizer** |
+|:---:|
+| ![Configure Dashboard](file:///d:/project/Halleyx/screenshots/configure.png) |
+
+### 📱 Mobile Excellence
+
+| **Mobile Dashboard** | **Mobile Products** |
+|:---:|:---:|
+| ![Mobile Dashboard](file:///d:/project/Halleyx/screenshots/mobile_dashboard.png) | ![Mobile Products](file:///d:/project/Halleyx/screenshots/mobile_product_management.png) |
+
+| **Mobile Orders** | **Mobile Configure** |
+|:---:|:---:|
+| ![Mobile Create Order](file:///d:/project/Halleyx/screenshots/mobile_create_order.png) | ![Mobile Configure](file:///d:/project/Halleyx/screenshots/mobile_configure.png) |
+
+| **Mobile Dynamic Widgets** |
+|:---:|
+| ![Mobile Widgets](file:///d:/project/Halleyx/screenshots/mobile_dashboard_widgets.png) |
 
 ## 🚀 Key Features
 
