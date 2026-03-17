@@ -3,7 +3,6 @@ flask-cors
 flask-jwt-extended
 pymongo
 python-dotenv
-flask-mongoengine
 mongoengine
 bcrypt
 certifi
