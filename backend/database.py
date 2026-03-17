@@ -72,7 +72,7 @@ def init_db(app):
                         phone="5551234567", street_address="789 Connectivity Way", city="Austin",
                         state="TX", postal_code="78701", country="USA",
                         product="Business Internet 500 Mbps", quantity=1, unit_price=800.0,
-                        total_amount=800.0, status="Shipped", user_id="guest_user"
+                        total_amount=800.0, status="In Progress", user_id="guest_user"
                     ),
                     Order(
                         first_name="Emily", last_name="Davis", email="emily.d@example.com",
