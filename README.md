@@ -2,7 +2,7 @@
 
 A world-class, full-stack ERP-style dashboard for managing customer orders and viewing real-time analytics. Built with a focus on **security**, **visual excellence**, and **unmatched performance**.
 
-![Desktop Overview](file:///d:/project/Halleyx/screenshots/dashboard_extended.png)
+![Desktop Overview](screenshots/dashboard_extended.png)
 
 ## 🌟 Visual Overview
 
@@ -10,29 +10,29 @@ A world-class, full-stack ERP-style dashboard for managing customer orders and v
 
 | **Main Dashboard** | **Product Management** |
 |:---:|:---:|
-| ![Dashboard](file:///d:/project/Halleyx/screenshots/dashboard_extended.png) | ![Manage Products](file:///d:/project/Halleyx/screenshots/manage_products.png) |
+| ![Dashboard](screenshots/dashboard_extended.png) | ![Manage Products](screenshots/manage_products.png) |
 
 | **Customer Orders** | **Order Creation** |
 |:---:|:---:|
-| ![Customer Orders](file:///d:/project/Halleyx/screenshots/customer_orders.png) | ![Create Order](file:///d:/project/Halleyx/screenshots/create_order.png) |
+| ![Customer Orders](screenshots/customer_orders.png) | ![Create Order](screenshots/create_order.png) |
 
 | **Dashboard Customizer** |
 |:---:|
-| ![Configure Dashboard](file:///d:/project/Halleyx/screenshots/configure.png) |
+| ![Configure Dashboard](screenshots/configure.png) |
 
 ### 📱 Mobile Excellence
 
 | **Mobile Dashboard** | **Mobile Products** |
 |:---:|:---:|
-| ![Mobile Dashboard](file:///d:/project/Halleyx/screenshots/mobile_dashboard.png) | ![Mobile Products](file:///d:/project/Halleyx/screenshots/mobile_product_management.png) |
+| ![Mobile Dashboard](screenshots/mobile_dashboard.png) | ![Mobile Products](screenshots/mobile_product_management.png) |
 
 | **Mobile Orders** | **Mobile Configure** |
 |:---:|:---:|
-| ![Mobile Create Order](file:///d:/project/Halleyx/screenshots/mobile_create_order.png) | ![Mobile Configure](file:///d:/project/Halleyx/screenshots/mobile_configure.png) |
+| ![Mobile Create Order](screenshots/mobile_create_order.png) | ![Mobile Configure](screenshots/mobile_configure.png) |
 
 | **Mobile Dynamic Widgets** |
 |:---:|
-| ![Mobile Widgets](file:///d:/project/Halleyx/screenshots/mobile_dashboard_widgets.png) |
+| ![Mobile Widgets](screenshots/mobile_dashboard_widgets.png) |
 
 ## 🚀 Key Features
 
