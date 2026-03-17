@@ -43,22 +43,24 @@ const Dashboard = () => {
     const totalCustomers = new Set(orders.map(o => o.customer_name)).size;
     const totalQuantity = orders.reduce((sum, o) => sum + (parseInt(o.quantity) || 0), 0);
 
-    // --- Product Revenue (bar chart) ---
-    const productRevenue = (() => {
-        const products = {};
+    // --- Monthly Revenue (bar chart) ---
+    const monthlyRevenue = (() => {
+        const months = {};
         orders.forEach(o => {
-            const label = o.product || 'Unknown Product';
-            products[label] = (products[label] || 0) + (parseFloat(o.total_amount) || 0);
+            let dateStr = o.created_at || o.order_date;
+            if (!dateStr && o._id && o._id.length === 24) {
+                dateStr = new Date(parseInt(o._id.substring(0, 8), 16) * 1000).toISOString();
+            }
+            if (!dateStr) return;
+            const d = new Date(dateStr);
+            const label = d.toLocaleString('default', { month: 'short' });
+            months[label] = (months[label] || 0) + (parseFloat(o.total_amount) || 0);
         });
-        
-        if (Object.keys(products).length === 0 && orders.length > 0) {
-            return [{ product: 'None', revenue: 0 }];
+        // Ensure at least some months appear if data exists
+        if (Object.keys(months).length === 0 && orders.length > 0) {
+            return [{ month: 'Jan', revenue: 0 }];
         }
-        
-        // Sort by revenue descending for better visualization
-        return Object.entries(products)
-            .map(([product, revenue]) => ({ product, revenue: Number(revenue.toFixed(2)) }))
-            .sort((a, b) => b.revenue - a.revenue);
+        return Object.entries(months).map(([month, revenue]) => ({ month, revenue: Number(revenue.toFixed(2)) }));
     })();
 
     // --- Status Overview (pie chart) ---
@@ -183,14 +185,14 @@ const Dashboard = () => {
 
                         {/* Charts Row */}
                         <div className="grid-charts">
-                            {/* Bar Chart - Product Revenue */}
+                            {/* Bar Chart - Monthly Revenue */}
                             <div style={{ border: '1px solid var(--border)', borderRadius: '6px', padding: '1.25rem' }}>
-                                <p style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '1rem', color: 'var(--text-dark)' }}>Revenue by Product</p>
-                                {productRevenue.length > 0 ? (
+                                <p style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '1rem', color: 'var(--text-dark)' }}>Monthly Revenue</p>
+                                {monthlyRevenue.length > 0 ? (
                                     <ResponsiveContainer width="100%" height={220}>
-                                        <BarChart data={productRevenue} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                                        <BarChart data={monthlyRevenue} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                                             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                                            <XAxis dataKey="product" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} hide={productRevenue.length > 8} />
+                                            <XAxis dataKey="month" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
                                             <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `₹${v.toLocaleString('en-IN')}`} />
                                             <Tooltip formatter={v => [`₹${v.toLocaleString('en-IN')}`, 'Revenue']} />
                                             <Bar dataKey="revenue" fill="#4f46e5" radius={[3, 3, 0, 0]} />

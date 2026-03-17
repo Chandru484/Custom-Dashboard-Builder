@@ -1,80 +1,97 @@
 import os
 import sys
-import random
-from datetime import datetime, timedelta
-from mongoengine import connect
-from models import Product, Order
+from flask_sqlalchemy import SQLAlchemy
+from models import db, Product, Order
+
+# COLLECTIONS placeholders (to be updated in routes to use models)
+orders_collection = None
+dashboards_collection = None
+users_collection = None
+products_collection = None
 
 def init_db(app):
     """
-    Initialize MongoDB connection using MongoEngine connect().
-    Reads MONGO_URI from the .env file.
+    Initialize MySQL connection using SQLAlchemy.
+    Reads MYSQL_URI from the .env file.
     """
-    MONGO_URI = os.getenv("MONGODB_URI") or os.getenv("MONGO_URI") or "mongodb+srv://Chandru:Chandru@cluster0.gfxrmm3.mongodb.net/?appName=Cluster0"
+    MYSQL_URI = os.getenv("MYSQL_URI", "mysql+mysqlconnector://root:root@localhost/dashboard_builder")
     
-    try:
-        # Connect directly without Flask wrapper to avoid JSONEncoder issues
-        connect(host=MONGO_URI)
-        print("[SUCCESS] Connected to MongoDB Atlas via MongoEngine.")
-        
-        # Test connection by performing a count
-        Product.objects.count()
-        
-        # Auto-seed products if empty
-        if Product.objects.count() == 0:
-            print("[INFO] Products collection is empty. Seeding default products...")
-            default_products = [
-                Product(name="VoIP Corporate Package", price=450.0),
-                Product(name="Business Internet 500 Mbps", price=800.0),
-                Product(name="Fiber Internet 1 Gbps", price=1200.0),
-                Product(name="5G Unlimited Mobile Plan", price=300.0),
-                Product(name="Fiber Internet 300 Mbps", price=500.0)
-            ]
-            Product.objects.insert(default_products)
-            print(f"[SUCCESS] Seeded {len(default_products)} products.")
+    # Fix for Render: Handle driver prefix and Aiven SSL parameter hyphen
+    if MYSQL_URI.startswith("mysql://"):
+        MYSQL_URI = MYSQL_URI.replace("mysql://", "mysql+mysqlconnector://", 1)
+        print("[INFO] Automatically adjusted MYSQL_URI driver.")
+    
+    if "ssl-mode=" in MYSQL_URI:
+        MYSQL_URI = MYSQL_URI.replace("ssl-mode=", "ssl_mode=")
+        print("[INFO] Automatically adjusted SSL parameter (hyphen to underscore).")
+    
+    app.config['SQLALCHEMY_DATABASE_URI'] = MYSQL_URI
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-        # Auto-seed orders if empty (Extensive Seed - 25 records total)
-        if Order.objects.count() == 0:
-            print("[INFO] Orders collection is empty. Seeding extensive sample data (25 records)...")
-            
-            base_customers = [
-                ("John", "Doe", "john.doe@example.com", "San Francisco", "CA"),
-                ("Jane", "Smith", "jane.smith@example.com", "New York", "NY"),
-                ("Robert", "Brown", "robert.b@example.com", "Austin", "TX"),
-                ("Emily", "Davis", "emily.d@example.com", "Seattle", "WA"),
-                ("Michael", "Wilson", "m.wilson@example.com", "Chicago", "IL"),
-                ("Alice", "Johnson", "alice.j@example.com", "Denver", "CO"),
-                ("Mark", "Thompson", "m.thompson@pro.com", "Miami", "FL"),
-                ("Sophia", "Garcia", "sophia.g@creative.net", "Silicon Valley", "CA"),
-                ("David", "Miller", "dmiller@tech.org", "Dallas", "TX"),
-                ("Olivia", "Martinez", "olivia.m@global.com", "Atlanta", "GA")
-            ]
-            
-            products = Product.objects.all()
-            statuses = ["Pending", "In Progress", "Completed"]
-            new_orders = []
-            
-            # Generate 25 diverse orders backdated over 6 months
-            for i in range(25):
-                first, last, email, city, state = random.choice(base_customers)
-                # Use modulo to ensure perfectly even product distribution initially
-                prod = products[i % len(products)]
-                qty = random.randint(1, 3)
-                backdate_days = random.randint(0, 180)
-                
-                new_orders.append(Order(
-                    first_name=first, last_name=last, email=email,
-                    phone=f"555-{random.randint(100, 999)}-{random.randint(1000, 9999)}",
-                    street_address=f"{random.randint(100, 999)} Tech Dr", city=city,
-                    state=state, postal_code=str(random.randint(10000, 99999)), country="USA",
-                    product=prod.name, quantity=qty, unit_price=prod.price,
-                    total_amount=qty * prod.price, status=statuses[i % len(statuses)],
-                    user_id="guest_user",
-                    created_at=datetime.utcnow() - timedelta(days=backdate_days)
-                ))
-            
-            Order.objects.insert(new_orders)
-            print(f"[SUCCESS] Seeded {len(new_orders)} extensive sample orders across 6 months.")
+    db.init_app(app)
 
-    except Exception as e:
-        print(f"[ERROR] MongoDB connection failed: {e}")
+    with app.app_context():
+        try:
+            db.create_all()
+            print("[SUCCESS] Connected to MySQL and tables created.")
+            
+            # Auto-seed products if empty
+            if Product.query.count() == 0:
+                print("[INFO] Products table is empty. Seeding default products...")
+                default_products = [
+                    Product(name="VoIP Corporate Package", price=450.0),
+                    Product(name="Business Internet 500 Mbps", price=800.0),
+                    Product(name="Fiber Internet 1 Gbps", price=1200.0),
+                    Product(name="5G Unlimited Mobile Plan", price=300.0),
+                    Product(name="Fiber Internet 300 Mbps", price=500.0)
+                ]
+                db.session.add_all(default_products)
+                db.session.commit()
+                print(f"[SUCCESS] Seeded {len(default_products)} products.")
+
+            # Auto-seed orders if empty
+            if Order.query.count() == 0:
+                print("[INFO] Orders table is empty. Seeding default orders...")
+                default_orders = [
+                    Order(
+                        first_name="John", last_name="Doe", email="john.doe@example.com",
+                        phone="1234567890", street_address="123 Tech Lane", city="San Francisco",
+                        state="CA", postal_code="94105", country="USA",
+                        product="Fiber Internet 1 Gbps", quantity=1, unit_price=1200.0,
+                        total_amount=1200.0, status="Completed", user_id="guest_user"
+                    ),
+                    Order(
+                        first_name="Jane", last_name="Smith", email="jane.smith@example.com",
+                        phone="0987654321", street_address="456 Innovation Dr", city="New York",
+                        state="NY", postal_code="10001", country="USA",
+                        product="5G Unlimited Mobile Plan", quantity=2, unit_price=300.0,
+                        total_amount=600.0, status="Pending", user_id="guest_user"
+                    ),
+                    Order(
+                        first_name="Robert", last_name="Brown", email="robert.b@example.com",
+                        phone="5551234567", street_address="789 Connectivity Way", city="Austin",
+                        state="TX", postal_code="78701", country="USA",
+                        product="Business Internet 500 Mbps", quantity=1, unit_price=800.0,
+                        total_amount=800.0, status="Shipped", user_id="guest_user"
+                    ),
+                    Order(
+                        first_name="Emily", last_name="Davis", email="emily.d@example.com",
+                        phone="4449876543", street_address="321 Broadband St", city="Seattle",
+                        state="WA", postal_code="98101", country="USA",
+                        product="Fiber Internet 300 Mbps", quantity=3, unit_price=500.0,
+                        total_amount=1500.0, status="Pending", user_id="guest_user"
+                    ),
+                    Order(
+                        first_name="Michael", last_name="Wilson", email="m.wilson@example.com",
+                        phone="3335557777", street_address="555 Digital Rd", city="Chicago",
+                        state="IL", postal_code="60601", country="USA",
+                        product="VoIP Corporate Package", quantity=1, unit_price=450.0,
+                        total_amount=450.0, status="Completed", user_id="guest_user"
+                    )
+                ]
+                db.session.add_all(default_orders)
+                db.session.commit()
+                print(f"[SUCCESS] Seeded {len(default_orders)} orders.")
+        except Exception as e:
+            print(f"[ERROR] Failed to connect to MySQL: {e}")
+            sys.exit(1)

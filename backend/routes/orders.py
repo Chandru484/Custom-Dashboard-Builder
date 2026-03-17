@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify
-from models import Order, User
-import json
+from models import db, Order, User
 
 orders_bp = Blueprint('orders', __name__)
 
@@ -8,7 +7,7 @@ orders_bp = Blueprint('orders', __name__)
 def get_orders():
     """Fetch all orders (Everyone is admin now)"""
     try:
-        orders = Order.objects.all()
+        orders = Order.query.all()
         result = []
         for order in orders:
             order_data = {
@@ -31,12 +30,11 @@ def get_orders():
                 "created_at": order.created_at.isoformat() if order.created_at else None
             }
             
-            # Simplified owner/email logic for MongoDB
+            # Simplified owner/email logic for MySQL migration
             if order.user_id == 'guest_user':
                 order_data['owner_email'] = 'Guest'
             else:
-                # In Mongo, we might not have a separate User doc for everyone, so stay safe
-                user = User.objects.filter(id=order.user_id).first() if not order.user_id == 'guest_user' else None
+                user = User.query.get(order.user_id) if order.user_id.isdigit() else None
                 order_data['owner_email'] = user.email if user else 'System'
                 
             result.append(order_data)
@@ -86,7 +84,8 @@ def create_order():
             status=data["status"],
             user_id=user_id
         )
-        new_order.save()
+        db.session.add(new_order)
+        db.session.commit()
         
         return jsonify({
             "_id": str(new_order.id),
@@ -96,6 +95,7 @@ def create_order():
             "status": new_order.status
         }), 201
     except Exception as e:
+        db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
 
@@ -105,7 +105,7 @@ def update_order(order_id):
     data = request.json or {}
     
     try:
-        order = Order.objects(id=order_id).first()
+        order = Order.query.get(order_id)
         if not order:
             return jsonify({"error": "Order not found"}), 404
 
@@ -118,9 +118,10 @@ def update_order(order_id):
         if "quantity" in data or "unit_price" in data:
             order.total_amount = float(order.quantity) * float(order.unit_price)
 
-        order.save()
+        db.session.commit()
         return jsonify({"_id": str(order.id), "message": "Order updated"}), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
 
@@ -128,11 +129,13 @@ def update_order(order_id):
 def delete_order(order_id):
     """Delete a customer order"""
     try:
-        order = Order.objects(id=order_id).first()
+        order = Order.query.get(order_id)
         if not order:
             return jsonify({"error": "Order not found"}), 404
             
-        order.delete()
+        db.session.delete(order)
+        db.session.commit()
         return jsonify({"message": "Order deleted successfully"}), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify({"error": str(e)}), 500
