@@ -3,8 +3,9 @@ flask-cors
 flask-jwt-extended
 pymongo
 python-dotenv
-mysql-connector-python
-flask-sqlalchemy
+flask-mongoengine
+mongoengine
 bcrypt
 certifi
 gunicorn
+dnspython

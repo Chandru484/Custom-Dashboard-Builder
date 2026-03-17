@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from models import db, DashboardConfig
+from models import DashboardConfig
 
 dashboards_bp = Blueprint('dashboards', __name__)
 
@@ -8,7 +8,7 @@ def get_dashboard_config():
     """Fetch the saved dashboard configuration"""
     try:
         user_id = "guest_user"
-        config = DashboardConfig.query.filter_by(user_id=user_id).first()
+        config = DashboardConfig.objects(user_id=user_id).first()
         
         if not config:
             return jsonify({"widgets": []}), 200
@@ -31,17 +31,15 @@ def save_dashboard_config():
         return jsonify({"error": "Missing 'widgets' array in payload"}), 400
         
     try:
-        config = DashboardConfig.query.filter_by(user_id=user_id).first()
+        config = DashboardConfig.objects(user_id=user_id).first()
         
         if config:
             config.widgets = data["widgets"]
         else:
             config = DashboardConfig(user_id=user_id, widgets=data["widgets"])
-            db.session.add(config)
             
-        db.session.commit()
+        config.save()
         return jsonify({"message": "Dashboard saved successfully"}), 200
             
     except Exception as e:
-        db.session.rollback()
         return jsonify({"error": str(e)}), 500

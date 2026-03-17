@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from models import db, Product
+from models import Product
 
 products_bp = Blueprint('products', __name__)
 
@@ -7,7 +7,7 @@ products_bp = Blueprint('products', __name__)
 def get_products():
     """List all products"""
     try:
-        products = Product.query.all()
+        products = Product.objects.all()
         result = []
         for p in products:
             result.append({
@@ -30,12 +30,11 @@ def add_product():
         return jsonify({"error": "Product name is required"}), 400
         
     try:
-        if Product.query.filter_by(name=name).first():
+        if Product.objects.filter(name=name).first():
             return jsonify({"error": "Product already exists"}), 400
             
         new_p = Product(name=name, price=float(price))
-        db.session.add(new_p)
-        db.session.commit()
+        new_p.save()
         
         return jsonify({
             "_id": str(new_p.id),
@@ -43,7 +42,6 @@ def add_product():
             "price": new_p.price
         }), 201
     except Exception as e:
-        db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
 @products_bp.route('/<id>', methods=['PUT'])
@@ -52,7 +50,7 @@ def update_product(id):
     data = request.json or {}
     
     try:
-        product = Product.query.get(id)
+        product = Product.objects(id=id).first()
         if not product:
             return jsonify({"error": "Product not found"}), 404
             
@@ -61,27 +59,24 @@ def update_product(id):
         if 'price' in data:
             product.price = float(data['price'])
             
-        db.session.commit()
+        product.save()
         return jsonify({
             "_id": str(product.id),
             "name": product.name,
             "price": product.price
         }), 200
     except Exception as e:
-        db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
 @products_bp.route('/<id>', methods=['DELETE'])
 def delete_product(id):
     """Remove a product"""
     try:
-        product = Product.query.get(id)
+        product = Product.objects(id=id).first()
         if not product:
             return jsonify({"error": "Product not found"}), 404
             
-        db.session.delete(product)
-        db.session.commit()
+        product.delete()
         return jsonify({"message": "Product removed"}), 200
     except Exception as e:
-        db.session.rollback()
         return jsonify({"error": str(e)}), 500
