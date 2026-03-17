@@ -12,7 +12,7 @@ const useWindowWidth = () => {
 };
 
 import { useNavigate } from 'react-router-dom';
-import { Responsive as ResponsiveGridLayout, WidthProvider } from 'react-grid-layout';
+import { Responsive as ResponsiveGridLayout, WidthProvider } from 'react-grid-layout/legacy';
 const ResponsiveGridLayoutWithWidth = WidthProvider(ResponsiveGridLayout);
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
@@ -73,10 +73,8 @@ const ConfigureDashboard = () => {
     const loadExistingConfig = async () => {
         try {
             const res = await dashboardServices.getConfig();
-            if (res.data?.widgets && Array.isArray(res.data.widgets)) {
+            if (res.data?.widgets) {
                 setWidgets(res.data.widgets);
-            } else {
-                setWidgets([]);
             }
         } catch (error) {
             console.error("Error loading config", error);

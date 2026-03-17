@@ -2,8 +2,13 @@ import React from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { aggregateData } from '../../services/dataEngine';
 
-const PieChartWidget = ({ config, data = [] }) => {
-    if (!config?.xAxis) { // For pie, xAxis is the category
+const COLORS = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+
+const PieChartWidget = ({ config, data = [], style = {} }) => {
+    const fontSize = style.fontSize || 12;
+
+    // If no config set, show placeholder
+    if (!config?.xAxis || !config?.yAxis) {
         return (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)' }}>
                 <span>Configure Widget Settings</span>
@@ -11,47 +16,32 @@ const PieChartWidget = ({ config, data = [] }) => {
         );
     }
 
+    // Process data based on config
     const renderData = data.length > 0 ? aggregateData(data, config) : [];
 
-    const categoryKey = config.xAxis || 'name';
-    const valueKey = config.yAxis || 'value'; // Though Pie often just needs a valueKey, user selects metric
-    const showLegend = config.showDataLabel !== false;
-
-    // Visually distinct palette — no two adjacent colors are similar
-    const COLORS = [
-        '#6366f1', // Indigo 500
-        '#8b5cf6', // Violet 500
-        '#ec4899', // Pink 500
-        '#06b6d4', // Cyan 500
-        '#10b981', // Emerald 500
-        '#f59e0b', // Amber 500
-        '#ef4444', // Red 500
-        '#3b82f6', // Blue 500
-        '#f97316', // Orange 500
-        '#84cc16', // Lime 500
-    ];
+    const yKey = config.yAxis || 'value';
 
     return (
         <ResponsiveContainer width="100%" height="100%">
-            <PieChart margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+            <PieChart>
                 <Pie
                     data={renderData}
                     cx="50%"
-                    cy="50%"
+                    cy="45%"
                     innerRadius={60}
                     outerRadius={80}
                     paddingAngle={5}
-                    dataKey={valueKey}
-                    nameKey={categoryKey}
+                    dataKey={yKey}
                 >
                     {renderData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                 </Pie>
-                <Tooltip
-                    contentStyle={{ borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-md)' }}
+                <Tooltip 
+                    contentStyle={{ borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', fontSize: `${fontSize}px` }}
+                    formatter={(val) => (yKey === 'total_amount' || yKey === 'unit_price') ? [`₹${val.toLocaleString('en-IN')}`, config.xAxis] : [val, config.xAxis]}
                 />
-                {showLegend && <Legend verticalAlign="bottom" align="center" iconType="circle" wrapperStyle={{ paddingTop: '10px' }} />}
+                <Legend iconType="circle" wrapperStyle={{ fontSize: `${fontSize}px`, paddingTop: '10px' }} />
             </PieChart>
         </ResponsiveContainer>
     );

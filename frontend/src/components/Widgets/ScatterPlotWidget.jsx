@@ -24,14 +24,14 @@ const FIELD_LABELS = {
     total_amount: 'Total Amount (₹)',
 };
 
-const CustomTooltip = ({ active, payload }) => {
+const CustomTooltip = ({ active, payload, fontSize = 12 }) => {
     if (!active || !payload?.length) return null;
     const d = payload[0]?.payload;
     return (
         <div style={{
             background: '#fff', border: '1px solid var(--border)',
             borderRadius: '8px', padding: '0.6rem 0.9rem',
-            boxShadow: 'var(--shadow-md)', fontSize: '0.8rem', color: 'var(--text-dark)'
+            boxShadow: 'var(--shadow-md)', fontSize: `${fontSize}px`, color: 'var(--text-dark)'
         }}>
             {d?.name && <div style={{ fontWeight: 600, marginBottom: '0.25rem' }}>{d.name}</div>}
             {payload.map((p, i) => (
@@ -41,7 +41,8 @@ const CustomTooltip = ({ active, payload }) => {
     );
 };
 
-const ScatterPlotWidget = ({ config = {}, data = [] }) => {
+const ScatterPlotWidget = ({ config = {}, data = [], style = {} }) => {
+    const fontSize = style.fontSize || 12;
     const xField = config.xAxis || 'quantity';
     const yField = config.yAxis || 'total_amount';
     const color  = 'var(--primary)';
@@ -53,7 +54,7 @@ const ScatterPlotWidget = ({ config = {}, data = [] }) => {
             <div style={{
                 height: '100%', display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
-                color: 'var(--text-muted)', fontSize: '0.825rem', gap: '0.35rem'
+                color: 'var(--text-muted)', fontSize: `${fontSize}px`, gap: '0.35rem'
             }}>
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -62,7 +63,7 @@ const ScatterPlotWidget = ({ config = {}, data = [] }) => {
                 </svg>
                 <span>No data available</span>
                 {(!config.xAxis || !config.yAxis) && (
-                    <span style={{ fontSize: '0.72rem', color: 'var(--text-light)' }}>
+                    <span style={{ fontSize: `${fontSize * 0.8}px`, color: 'var(--text-light)' }}>
                         Set X & Y axes in the Data tab
                     </span>
                 )}
@@ -78,26 +79,26 @@ const ScatterPlotWidget = ({ config = {}, data = [] }) => {
                     type="number"
                     dataKey="x"
                     name={FIELD_LABELS[xField] || xField}
-                    tick={{ fontSize: 11, fill: 'var(--text-muted)' }}
+                    tick={{ fontSize, fill: 'var(--text-muted)' }}
                     tickLine={false}
                 >
                     <Label
                         value={FIELD_LABELS[xField] || xField}
                         offset={-10}
                         position="insideBottom"
-                        style={{ fontSize: 11, fill: 'var(--text-muted)' }}
+                        style={{ fontSize: fontSize, fill: 'var(--text-muted)' }}
                     />
                 </XAxis>
                 <YAxis
                     type="number"
                     dataKey="y"
                     name={FIELD_LABELS[yField] || yField}
-                    tick={{ fontSize: 11, fill: 'var(--text-muted)' }}
+                    tick={{ fontSize, fill: 'var(--text-muted)' }}
                     tickLine={false}
                     width={55}
                 />
                 <ZAxis range={[40, 40]} />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<CustomTooltip fontSize={fontSize} />} />
                 <Scatter
                     name="Orders"
                     data={scatterData}

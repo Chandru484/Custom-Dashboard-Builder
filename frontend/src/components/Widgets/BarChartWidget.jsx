@@ -5,7 +5,21 @@ import { aggregateData } from '../../services/dataEngine';
 const BarChartWidget = ({ config, data = [], style = {} }) => {
     const fontSize = style.fontSize || 12;
 
-    // ... lines 7-21
+    // If no config set, show placeholder
+    if (!config?.xAxis || !config?.yAxis) {
+        return (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)' }}>
+                <span>Configure Widget Settings</span>
+            </div>
+        );
+    }
+
+    // Process data based on config
+    const renderData = data.length > 0 ? aggregateData(data, config) : [];
+
+    const xKey = config.xAxis || 'name';
+    const yKey = config.yAxis || 'value';
+    const color = config.chartColor || 'var(--primary)';
 
     return (
         <ResponsiveContainer width="100%" height="100%">
@@ -18,7 +32,7 @@ const BarChartWidget = ({ config, data = [], style = {} }) => {
                 />
                 <Tooltip
                     cursor={{ fill: 'rgba(241, 245, 249, 0.4)' }}
-                    contentStyle={{ borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-md)' }}
+                    contentStyle={{ borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-md)', fontSize: `${fontSize}px` }}
                     formatter={(val) => (yKey === 'total_amount' || yKey === 'unit_price') ? [`₹${val.toLocaleString('en-IN')}`, config.title || yKey] : [val, config.title || yKey]}
                 />
                 <Bar dataKey={yKey} fill={color} radius={[4, 4, 0, 0]} />

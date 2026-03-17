@@ -2,7 +2,9 @@ import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { aggregateData } from '../../services/dataEngine';
 
-const AreaChartWidget = ({ config, data = [] }) => {
+const AreaChartWidget = ({ config, data = [], style = {} }) => {
+    const fontSize = style.fontSize || 12;
+
     if (!config?.xAxis || !config?.yAxis) {
         return (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)' }}>
@@ -27,13 +29,13 @@ const AreaChartWidget = ({ config, data = [] }) => {
                     </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
-                <XAxis dataKey={xKey} tick={{ fontSize: 12, fill: 'var(--text-muted)' }} />
+                <XAxis dataKey={xKey} tick={{ fontSize, fill: 'var(--text-muted)' }} />
                 <YAxis 
-                    tick={{ fontSize: 12, fill: 'var(--text-muted)' }} 
+                    tick={{ fontSize, fill: 'var(--text-muted)' }} 
                     tickFormatter={val => (yKey === 'total_amount' || yKey === 'unit_price') ? `₹${val.toLocaleString('en-IN')}` : val}
                 />
                 <Tooltip
-                    contentStyle={{ borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-md)' }}
+                    contentStyle={{ borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-md)', fontSize: `${fontSize}px` }}
                     formatter={(val) => (yKey === 'total_amount' || yKey === 'unit_price') ? [`₹${val.toLocaleString('en-IN')}`, config.title || yKey] : [val, config.title || yKey]}
                 />
                 <Area type="monotone" dataKey={yKey} stroke={color} fillOpacity={1} fill={`url(#color${yKey})`} />

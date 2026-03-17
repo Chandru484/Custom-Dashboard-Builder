@@ -1,4 +1,4 @@
-# 🚀 Halleyx - Dashboard Builder
+# 🚀 Halleyx - Premium Dashboard Builder
 
 A world-class, full-stack ERP-style dashboard for managing customer orders and viewing real-time analytics. Built with a focus on **security**, **visual excellence**, and **unmatched performance**.
 
@@ -53,8 +53,7 @@ A world-class, full-stack ERP-style dashboard for managing customer orders and v
 
 ### Backend
 - **Flask (Python)** – Scalable and efficient REST API.
-- **MySQL (Relational)** – High-performance, reliable relational database.
-- **Flask-SQLAlchemy** – Elegant ORM for MySQL integration.
+- **MongoDB Atlas** – Reliable, cloud-native NoSQL database.
 - **Flask-JWT-Extended** – Robust session and security management.
 - **Bcrypt** – Standard-setting password encryption.
 
@@ -65,7 +64,7 @@ A world-class, full-stack ERP-style dashboard for managing customer orders and v
 ### 1. Prerequisites
 - Python 3.9+
 - Node.js 18+ & npm
-- MySQL Server (Local or Remote)
+- MongoDB Atlas cluster URI
 
 ### 2. Backend Setup
 ```bash
@@ -73,7 +72,7 @@ cd backend
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-# Configure your .env file with MYSQL_URI and JWT_SECRET_KEY
+# Configure your .env file with MONGO_URI and JWT_SECRET_KEY
 python app.py
 ```
 

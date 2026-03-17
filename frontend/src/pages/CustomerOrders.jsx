@@ -136,8 +136,9 @@ const CustomerOrders = () => {
         const s = (status || 'Unknown').toLowerCase();
         let className = 'status-pill';
         if (s === 'pending') className += ' status-pending';
-        else if (s === 'completed') className += ' status-delivered';
-        else if (s === 'in progress') className += ' status-processing';
+        else if (s === 'delivered' || s === 'completed') className += ' status-delivered';
+        else if (s === 'in progress' || s === 'processing' || s === 'shipped') className += ' status-processing';
+        else if (s === 'cancelled') className += ' status-cancelled';
         else className += ' status-neutral';
 
         return (
