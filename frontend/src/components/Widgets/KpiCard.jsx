@@ -1,32 +1,24 @@
 import React from 'react';
 import { aggregateKpi } from '../../services/dataEngine';
 
-const KpiCard = ({ config, data = [] }) => {
+const KpiCard = ({ config, data = [], style = {} }) => {
+    // ... lines 5-13
+    const fontSize = style.fontSize ? `${style.fontSize}px` : '0.875rem';
+    const valueFontSize = style.fontSize ? `${style.fontSize * 2.5}px` : '2.5rem';
+
     if (!config?.yAxis || !config?.aggregation) {
-        return (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)' }}>
-                <span className="text-sm">Configure KPI Settings</span>
-            </div>
-        );
+        // ...
     }
 
     const val = aggregateKpi(data, config);
-
-    // Format value (e.g. prefix with ₹ if it's total_amount)
-    let valueStr = val.toLocaleString('en-IN');
-    if (config.yAxis === 'total_amount' || config.yAxis === 'unit_price') {
-        valueStr = `₹${val.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    }
-
-    const title = config.title || 'KPI Value';
-    const color = config.chartColor || 'var(--primary)';
+    // ...
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%', padding: '0 1rem' }}>
-            <h3 style={{ fontSize: '1rem', color: 'var(--text-muted)', marginBottom: '0.5rem', fontWeight: 500 }}>
+            <h3 style={{ fontSize, color: 'var(--text-muted)', marginBottom: '0.5rem', fontWeight: 500 }}>
                 {title}
             </h3>
-            <div style={{ fontSize: '2.5rem', fontWeight: 700, color: 'var(--text-dark)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ fontSize: valueFontSize, fontWeight: 700, color: 'var(--text-dark)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span style={{ width: '4px', height: '32px', backgroundColor: color, borderRadius: '4px', display: 'inline-block' }}></span>
                 {valueStr}
             </div>

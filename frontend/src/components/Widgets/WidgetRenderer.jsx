@@ -12,17 +12,17 @@ const WidgetRenderer = ({ widget, data }) => {
 
     switch (widget.type) {
         case 'KPI':
-            return <KpiCard config={widget.config} data={data} />;
+            return <KpiCard config={widget.config} data={data} style={widget.style} />;
         case 'BAR_CHART':
-            return <BarChartWidget config={widget.config} data={data} />;
+            return <BarChartWidget config={widget.config} data={data} style={widget.style} />;
         case 'LINE_CHART':
-            return <LineChartWidget config={widget.config} data={data} />;
+            return <LineChartWidget config={widget.config} data={data} style={widget.style} />;
         case 'PIE_CHART':
-            return <PieChartWidget config={widget.config} data={data} />;
+            return <PieChartWidget config={widget.config} data={data} style={widget.style} />;
         case 'AREA_CHART':
-            return <AreaChartWidget config={widget.config} data={data} />;
+            return <AreaChartWidget config={widget.config} data={data} style={widget.style} />;
         case 'SCATTER_PLOT':
-            return <ScatterPlotWidget config={widget.config} data={data} />;
+            return <ScatterPlotWidget config={widget.config} data={data} style={widget.style} />;
         case 'TABLE':
             return <TableWidget config={widget.config} data={data} style={widget.style} />;
         default:

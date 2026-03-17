@@ -320,7 +320,19 @@ const ConfigureDashboard = () => {
                         >
                         {widgets.map(widget => (
                             <div key={widget.id} style={{ display: 'flex', flexDirection: 'column', padding: '1rem', backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', marginBottom: '1rem', flexShrink: 0 }}>
+                                <div style={{ 
+                                    display: 'flex', 
+                                    justifyContent: 'space-between', 
+                                    alignItems: 'center', 
+                                    borderBottom: '1px solid var(--border)', 
+                                    paddingBottom: '0.5rem', 
+                                    marginBottom: '1rem', 
+                                    flexShrink: 0,
+                                    backgroundColor: widget.style?.headerBg || 'transparent',
+                                    margin: '-1rem -1rem 1rem -1rem',
+                                    padding: '0.75rem 1rem',
+                                    borderRadius: '8px 8px 0 0'
+                                }}>
                                     <h4 style={{ margin: 0 }}>{widget.title || widget.type}</h4>
                                     <div style={{ display: 'flex', gap: '0.5rem' }}>
                                         <button className="btn-icon non-draggable" onMouseDown={(e) => e.stopPropagation()} onClick={() => setActiveWidget(widget)}>⚙️</button>
