@@ -4,7 +4,9 @@ A world-class, full-stack ERP-style dashboard for managing customer orders and v
 
 ## 🎥 Workflow Demonstration
 
-![Project Workflow](screenshots/dashboard_builder.mp4)
+<div align="center">
+  <video src="https://raw.githubusercontent.com/Chandru484/Custom-Dashboard-Builder/main/screenshots/dashboard_builder.mp4" width="100%" controls></video>
+</div>
 
 ---
 
