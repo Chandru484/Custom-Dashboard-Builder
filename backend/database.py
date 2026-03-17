@@ -16,11 +16,14 @@ def init_db(app):
     """
     MYSQL_URI = os.getenv("MYSQL_URI", "mysql+mysqlconnector://root:root@localhost/dashboard_builder")
     
-    # Fix for Render: If the user provided a URI starting with mysql:// (missing the driver),
-    # we automatically prepend the explicit driver to avoid "ModuleNotFoundError: No module named 'MySQLdb'"
+    # Fix for Render: Handle driver prefix and Aiven SSL parameter hyphen
     if MYSQL_URI.startswith("mysql://"):
         MYSQL_URI = MYSQL_URI.replace("mysql://", "mysql+mysqlconnector://", 1)
-        print("[INFO] Automatically adjusted MYSQL_URI to use mysql+mysqlconnector driver.")
+        print("[INFO] Automatically adjusted MYSQL_URI driver.")
+    
+    if "ssl-mode=" in MYSQL_URI:
+        MYSQL_URI = MYSQL_URI.replace("ssl-mode=", "ssl_mode=")
+        print("[INFO] Automatically adjusted SSL parameter (hyphen to underscore).")
     
     app.config['SQLALCHEMY_DATABASE_URI'] = MYSQL_URI
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
