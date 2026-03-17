@@ -214,13 +214,13 @@ const CustomerOrders = () => {
                     <table className="data-table orders-table">
                         <thead>
                             <tr>
-                                <th>Order ID</th>
+                                <th>ID</th>
                                 <th>Customer</th>
                                 <th>Product</th>
-                                <th>Qty</th>
+                                <th className="mobile-hide">Qty</th>
                                 <th>Total</th>
                                 <th>Status</th>
-                                <th>Created By</th>
+                                <th className="mobile-hide">Created By</th>
                                 <th style={{ textAlign: 'right' }}>Actions</th>
                             </tr>
                         </thead>
@@ -243,10 +243,10 @@ const CustomerOrders = () => {
                                     <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{orderId(o, i)}</td>
                                     <td style={{ fontWeight: 500 }}>{o.customer_name || `${o.first_name || ''} ${o.last_name || ''}`.trim() || '-'}</td>
                                     <td>{o.product}</td>
-                                    <td>{o.quantity}</td>
+                                    <td className="mobile-hide">{o.quantity}</td>
                                     <td style={{ fontWeight: 600 }}>{fmt(o.total_amount)}</td>
                                     <td>{statusBadge(o.status)}</td>
-                                    <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{o.owner_email ? o.owner_email.split('@')[0] : 'admin'}</td>
+                                    <td className="mobile-hide" style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{o.owner_email ? o.owner_email.split('@')[0] : 'admin'}</td>
                                     <td>
                                         <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
                                             <button className="action-btn-circle" title="Edit" onClick={() => { setSelectedOrder(o); setIsModalOpen(true); }}>

@@ -225,7 +225,7 @@ const Dashboard = () => {
                                                 ))}
                                             </Pie>
                                             <Tooltip />
-                                            <Legend layout="vertical" align="right" verticalAlign="middle" iconType="square" wrapperStyle={{ fontSize: '0.8rem' }} />
+                                            <Legend layout="horizontal" align="center" verticalAlign="bottom" iconType="square" wrapperStyle={{ fontSize: '0.8rem', paddingTop: '1rem' }} />
                                         </PieChart>
                                     </ResponsiveContainer>
                                 ) : (
@@ -245,10 +245,10 @@ const Dashboard = () => {
                             <table className="data-table">
                                 <thead>
                                     <tr>
-                                        {['Order ID', 'Quantity', 'Product', 'Total amount'].map(col => (
+                                        {['ID', 'Qty', 'Product', 'Amount'].map(col => (
                                             <th key={col}>{col}</th>
                                         ))}
-                                        {isAdmin && <th>Owner</th>}
+                                        {isAdmin && <th className="mobile-hide">Owner</th>}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -264,7 +264,7 @@ const Dashboard = () => {
                                             <td style={{ padding: '0.75rem 1.25rem' }}>{order.quantity}</td>
                                             <td style={{ padding: '0.75rem 1.25rem' }}>{order.product}</td>
                                             <td style={{ padding: '0.75rem 1.25rem' }}>₹ {parseFloat(order.total_amount || 0).toFixed(2)}</td>
-                                            {isAdmin && <td style={{ padding: '0.75rem 1.25rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>{order.owner_email || '-'}</td>}
+                                            {isAdmin && <td className="mobile-hide" style={{ padding: '0.75rem 1.25rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>{order.owner_email || '-'}</td>}
                                         </tr>
                                     )) : (
                                         <tr>
