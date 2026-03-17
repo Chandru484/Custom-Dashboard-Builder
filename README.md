@@ -2,6 +2,8 @@
 
 A world-class, full-stack ERP-style dashboard for managing customer orders and viewing real-time analytics. Built with a focus on **security**, **visual excellence**, and **unmatched performance**.
 
+**🌐 Live Demo:** [custom-dashboard-builder.vercel.app](https://custom-dashboard-builder.vercel.app/)
+
 ![Desktop Overview](screenshots/dashboard_extended.png)
 
 ## 🌟 Visual Overview
