@@ -1,46 +1,60 @@
-# Dashboard Builder
+# 🚀 Halleyx - Premium Dashboard Builder
 
-A premium, full-stack ERP-style dashboard for managing customer orders and viewing real-time analytics. Built with a focus on **security**, **responsiveness**, and **performance**.
+A world-class, full-stack ERP-style dashboard for managing customer orders and viewing real-time analytics. Built with a focus on **security**, **visual excellence**, and **unmatched performance**.
 
-## 🚀 Features
+![Desktop View](file:///d:/project/Halleyx/screenshots/dashboard_extended.png)
 
-- **Secure Authentication:** Full JWT-based login and signup system with role-based access control (User & Admin).
-- **Dynamic Dashboard:** Configurable charts and KPI cards that update in real-time as data changes.
-- **Configure Dashboard:** Powerful drag-and-drop interface to build and customize your own dashboard layout.
-- **Order Management:** Complete CRUD operations for customer orders with automated price calculations.
-- **Premium Responsive UI:** A "Deep Blue" minimal design that adapts perfectly to desktop, tablet, and mobile screens.
-- **Admin Access:** A dedicated (unlisted) route for administrative login to manage system-wide settings.
+## 🌟 Visual Overview
+
+| **Dynamic Dashboard** | **Order Management** |
+|:---:|:---:|
+| ![Configure Dashboard](file:///d:/project/Halleyx/screenshots/configure.png) | ![Create Order](file:///d:/project/Halleyx/screenshots/create_order.png) |
+| *Real-time analytics and drag-and-drop customization.* | *Streamlined order creation and management.* |
+
+| **Mobile Excellence** | **Responsive Design** |
+|:---:|:---:|
+| ![Mobile Dashboard](file:///d:/project/Halleyx/screenshots/mobile_dashboard.png) | ![Mobile Settings](file:///d:/project/Halleyx/screenshots/settings_mobile.png) |
+| *Intuitive experience on small screens.* | *Pixel-perfect responsiveness across all devices.* |
+
+## 🚀 Key Features
+
+- **🔐 Secure Authentication:** Enterprise-grade JWT authentication with role-based access control (RBAC) and hashed password storage using Bcrypt.
+- **🎨 Premium UI/UX:** A sleek "Deep Blue & White" minimal design system, prioritizing clarity and professional aesthetics.
+- **📊 Real-Time Analytics:** Interactive charts and KPI cards that refresh automatically as data changes, powered by `Recharts`.
+- **🛠️ Dashboard Customizer:** A flexible drag-and-drop configuration interface to tailor your dashboard layout to your specific needs.
+- **📦 Advanced Order Management:** Robust CRUD operations for products and customer orders with automated price calculations and detailed tracking.
+- **📱 Fully Responsive:** Optimized for desktop, tablet, and mobile, ensuring a consistent experience everywhere.
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **React (Vite)** for a lightning-fast UI.
-- **Recharts** for premium data visualizations.
-- **Axios** with JWT interceptors for secure API communication.
-- **Custom CSS** for a pixel-perfect, framework-free design system.
+- **React 18 (Vite)** – High-performance, reactive UI.
+- **Recharts** – Stunning data visualizations.
+- **Axios** – Secure API communication with interceptors.
+- **Vanilla CSS** – A bespoke, high-performance design system without framework bloat.
 
 ### Backend
-- **Flask (Python)** for a robust RESTful API.
-- **MongoDB Atlas** for scalable, cloud-native data storage.
-- **Flask-JWT-Extended** for session management.
-- **Bcrypt** for secure password hashing.
+- **Flask (Python)** – Scalable and efficient REST API.
+- **MongoDB Atlas** – Reliable, cloud-native NoSQL database.
+- **Flask-JWT-Extended** – Robust session and security management.
+- **Bcrypt** – Standard-setting password encryption.
 
 ---
 
 ## 📖 Getting Started
 
 ### 1. Prerequisites
-- Python 3.x
-- Node.js & npm
-- MongoDB Atlas account (connection string needed)
+- Python 3.9+
+- Node.js 18+ & npm
+- MongoDB Atlas cluster URI
 
 ### 2. Backend Setup
 ```bash
 cd backend
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-# Create a .env file based on .env.example
+# Configure your .env file with MONGO_URI and JWT_SECRET_KEY
 python app.py
 ```
 
@@ -59,6 +73,8 @@ npm run dev
 
 ## 📁 Project Structure
 
-- `/backend`: Flask API routes, database models, and authentication logic.
-- `/frontend`: React components, pages, and global state management.
-- `/brain`: Project logs, task tracking, and implementation plans.
+- `📂 /backend`: Flask API logic, models, and authentication.
+- `📂 /frontend`: React source code, custom hooks, and styles.
+- `📂 /screenshots`: High-resolution visual assets.
+- `📂 /brain`: Development logs and implementation history.
+
