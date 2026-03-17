@@ -57,7 +57,8 @@ def init_db(app):
             # Generate 25 diverse orders backdated over 6 months
             for i in range(25):
                 first, last, email, city, state = random.choice(base_customers)
-                prod = random.choice(products)
+                # Use modulo to ensure perfectly even product distribution initially
+                prod = products[i % len(products)]
                 qty = random.randint(1, 3)
                 backdate_days = random.randint(0, 180)
                 
@@ -67,7 +68,7 @@ def init_db(app):
                     street_address=f"{random.randint(100, 999)} Tech Dr", city=city,
                     state=state, postal_code=str(random.randint(10000, 99999)), country="USA",
                     product=prod.name, quantity=qty, unit_price=prod.price,
-                    total_amount=qty * prod.price, status=random.choice(statuses),
+                    total_amount=qty * prod.price, status=statuses[i % len(statuses)],
                     user_id="guest_user",
                     created_at=datetime.utcnow() - timedelta(days=backdate_days)
                 ))
