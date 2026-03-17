@@ -51,7 +51,7 @@ def init_db(app):
             ]
             
             products = Product.objects.all()
-            statuses = ["Completed", "Pending", "Shipped", "Cancelled"]
+            statuses = ["Pending", "In Progress", "Completed"]
             new_orders = []
             
             # Generate 25 diverse orders backdated over 6 months
