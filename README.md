@@ -4,6 +4,10 @@ A world-class, full-stack ERP-style dashboard for managing customer orders and v
 
 ![Desktop Overview](screenshots/dashboard_extended.png)
 
+## 📹 Project Execution
+
+https://github.com/Chandru484/Custom-Dashboard-Builder/blob/main/screenshots/dashboard_execution.mp4
+
 ## 🌟 Visual Overview
 
 ### 🖥️ Desktop Experience
@@ -29,10 +33,6 @@ A world-class, full-stack ERP-style dashboard for managing customer orders and v
 | **Mobile Orders** | **Mobile Configure** |
 |:---:|:---:|
 | ![Mobile Create Order](screenshots/mobile_create_order.png) | ![Mobile Configure](screenshots/mobile_configure.png) |
-
-### 📹 Project Execution
-
-https://github.com/Chandru484/Custom-Dashboard-Builder/blob/main/screenshots/dashboard_execution.mp4
 
 
 ## 🚀 Key Features
