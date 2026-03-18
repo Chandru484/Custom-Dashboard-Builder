@@ -1,5 +1,6 @@
 import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart as AreaIcon } from 'lucide-react';
 import { aggregateData } from '../../services/dataEngine';
 
 const AreaChartWidget = ({ config, data = [], style = {} }) => {
@@ -7,8 +8,9 @@ const AreaChartWidget = ({ config, data = [], style = {} }) => {
 
     if (!config?.xAxis || !config?.yAxis) {
         return (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)' }}>
-                <span>Configure Area Chart</span>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)', gap: '1rem' }}>
+                <AreaIcon size={48} strokeWidth={1} opacity={0.5} />
+                <span style={{ fontSize: '0.9rem' }}>Configure Area Chart Settings</span>
             </div>
         );
     }
@@ -21,7 +23,7 @@ const AreaChartWidget = ({ config, data = [], style = {} }) => {
 
     return (
         <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={renderData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <AreaChart data={renderData} margin={{ top: 10, right: 30, left: 10, bottom: 40 }}>
                 <defs>
                     <linearGradient id={`color${yKey}`} x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor={color} stopOpacity={0.8} />
@@ -29,7 +31,14 @@ const AreaChartWidget = ({ config, data = [], style = {} }) => {
                     </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
-                <XAxis dataKey={xKey} tick={{ fontSize, fill: 'var(--text-muted)' }} />
+                <XAxis 
+                    dataKey={xKey} 
+                    tick={{ fontSize, fill: 'var(--text-muted)' }}
+                    interval={0}
+                    angle={-45}
+                    textAnchor="end"
+                    tickFormatter={(val) => val.length > 15 ? `${val.substring(0, 12)}...` : val}
+                />
                 <YAxis 
                     tick={{ fontSize, fill: 'var(--text-muted)' }} 
                     tickFormatter={val => (yKey === 'total_amount' || yKey === 'unit_price') ? `₹${val.toLocaleString('en-IN')}` : val}

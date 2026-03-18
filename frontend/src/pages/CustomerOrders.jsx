@@ -64,18 +64,16 @@ const CustomerOrders = () => {
     const totalCustomers = new Set(orders.map(o => o.customer_name)).size;
     const totalQuantity = orders.reduce((s, o) => s + (parseInt(o.quantity) || 0), 0);
 
-    // ── Monthly Revenue ───────────────────────────────────
-    const monthlyRevenue = (() => {
-        const m = {};
+    // ── Product Revenue ───────────────────────────────────
+    const productRevenue = (() => {
+        const p = {};
         orders.forEach(o => {
-            let ds = o.created_at || o.order_date;
-            if (!ds && o._id?.length === 24)
-                ds = new Date(parseInt(o._id.substring(0, 8), 16) * 1000).toISOString();
-            if (!ds) return;
-            const label = new Date(ds).toLocaleString('default', { month: 'short' });
-            m[label] = (m[label] || 0) + (parseFloat(o.total_amount) || 0);
+            const prod = o.product || 'Unknown';
+            p[prod] = (p[prod] || 0) + (parseFloat(o.total_amount) || 0);
         });
-        return Object.entries(m).map(([month, revenue]) => ({ month, revenue: +revenue.toFixed(2) }));
+        return Object.entries(p)
+            .map(([product, revenue]) => ({ product, revenue: +revenue.toFixed(2) }))
+            .sort((a, b) => b.revenue - a.revenue);
     })();
 
     // ── Status Overview ───────────────────────────────────
@@ -214,6 +212,7 @@ const CustomerOrders = () => {
                             <tr>
                                 <th>ID</th>
                                 <th>Customer</th>
+                                <th>Country</th>
                                 <th>Product</th>
                                 <th className="mobile-hide">Qty</th>
                                 <th>Total</th>
@@ -225,7 +224,7 @@ const CustomerOrders = () => {
                         <tbody>
                             {filteredOrders.length === 0 ? (
                                 <tr>
-                                    <td colSpan={8} style={{ padding: '4rem 2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                                    <td colSpan={9} style={{ padding: '4rem 2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
                                         <div style={{ marginBottom: '1rem', opacity: 0.5 }}>
                                             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
                                                 <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
@@ -239,7 +238,8 @@ const CustomerOrders = () => {
                             ) : filteredOrders.map((o, i) => (
                                 <tr key={o._id || i}>
                                     <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{orderId(o, i)}</td>
-                                    <td style={{ fontWeight: 500 }}>{o.customer_name || `${o.first_name || ''} ${o.last_name || ''}`.trim() || '-'}</td>
+                                    <td style={{ fontWeight: 500 }}>{`${o.first_name || ''} ${o.last_name || ''}`.trim() || o.customer_name || '-'}</td>
+                                    <td style={{ fontSize: '0.85rem' }}>{o.country || '-'}</td>
                                     <td>{o.product}</td>
                                     <td className="mobile-hide">{o.quantity}</td>
                                     <td style={{ fontWeight: 600 }}>{fmt(o.total_amount)}</td>

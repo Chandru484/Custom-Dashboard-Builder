@@ -20,16 +20,21 @@ import { dashboardServices, orderServices } from '../services/api';
 import WidgetRenderer from '../components/Widgets/WidgetRenderer';
 import WidgetConfigPanel from '../components/Widgets/WidgetConfigPanel';
 import { aggregateData } from '../services/dataEngine';
+import { 
+    ChevronLeft, Plus, Settings, Trash2, X, Save, Eye, Layout, 
+    BarChart3, LineChart as LineChartIcon, PieChart as PieChartIcon, AreaChart as AreaChartIcon, ScatterChart, Table2, Info,
+    Smartphone, Tablet, Monitor
+} from 'lucide-react';
 
 // Widget Types from Requirement (shortened default heights)
 const WIDGET_TYPES = [
-    { title: 'Bar Chart', type: 'BAR_CHART', defaultW: 6, defaultH: 4 },
-    { title: 'Line Chart', type: 'LINE_CHART', defaultW: 6, defaultH: 4 },
-    { title: 'Pie Chart', type: 'PIE_CHART', defaultW: 6, defaultH: 4 },
-    { title: 'Area Chart', type: 'AREA_CHART', defaultW: 6, defaultH: 4 },
-    { title: 'Scatter Plot', type: 'SCATTER_PLOT', defaultW: 6, defaultH: 4 },
-    { title: 'Table', type: 'TABLE', defaultW: 6, defaultH: 4 },
-    { title: 'KPI Value', type: 'KPI', defaultW: 4, defaultH: 2 }
+    { title: 'Bar Chart', type: 'BAR_CHART', defaultW: 6, defaultH: 6, minW: 3, minH: 3, icon: BarChart3 },
+    { title: 'Line Chart', type: 'LINE_CHART', defaultW: 6, defaultH: 6, minW: 3, minH: 3, icon: LineChartIcon },
+    { title: 'Pie Chart', type: 'PIE_CHART', defaultW: 4, defaultH: 6, minW: 3, minH: 4, icon: PieChartIcon },
+    { title: 'Area Chart', type: 'AREA_CHART', defaultW: 6, defaultH: 6, minW: 3, minH: 3, icon: AreaChartIcon },
+    { title: 'Scatter Plot', type: 'SCATTER_PLOT', defaultW: 6, defaultH: 6, minW: 3, minH: 3, icon: ScatterChart },
+    { title: 'Table', type: 'TABLE', defaultW: 12, defaultH: 8, minW: 4, minH: 4, icon: Table2 },
+    { title: 'KPI Value', type: 'KPI', defaultW: 3, defaultH: 3, minW: 2, minH: 2, icon: Info }
 ];
 
 import { useToast } from '../context/ToastContext';
@@ -186,8 +191,10 @@ const ConfigureDashboard = () => {
                                                 }
                                             }}
                                         >
-                                            <span style={{ opacity: 0.5 }}>⠿</span>
-                                            <span>{widget.title}</span>
+                                            <div className="widget-library-item-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px', borderRadius: '4px', backgroundColor: 'var(--bg-muted)', color: 'var(--primary)' }}>
+                                                {widget.icon && <widget.icon size={14} />}
+                                            </div>
+                                            <span style={{ fontWeight: 500 }}>{widget.title}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -213,8 +220,10 @@ const ConfigureDashboard = () => {
                                                 if (e.detail !== 0) addWidget(widget);
                                             }}
                                         >
-                                            <span style={{ opacity: 0.5 }}>⠿</span>
-                                            <span>{widget.title}</span>
+                                            <div className="widget-library-item-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px', borderRadius: '4px', backgroundColor: 'var(--bg-muted)', color: 'var(--primary)' }}>
+                                                {widget.icon && <widget.icon size={14} />}
+                                            </div>
+                                            <span style={{ fontWeight: 500 }}>{widget.title}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -240,8 +249,10 @@ const ConfigureDashboard = () => {
                                                 if (e.detail !== 0) addWidget(widget);
                                             }}
                                         >
-                                            <span style={{ opacity: 0.5 }}>⠿</span>
-                                            <span>{widget.title}</span>
+                                            <div className="widget-library-item-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px', borderRadius: '4px', backgroundColor: 'var(--bg-muted)', color: 'var(--primary)' }}>
+                                                {widget.icon && <widget.icon size={14} />}
+                                            </div>
+                                            <span style={{ fontWeight: 500 }}>{widget.title}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -285,8 +296,21 @@ const ConfigureDashboard = () => {
                             className="layout"
                             measureBeforeMount={true}
                             layouts={{
-                                lg: widgets.map(w => ({ i: w.id, ...w.grid })),
-                                md: widgets.map(w => ({ i: w.id, x: 0, y: w.grid.y, w: 8, h: w.grid.h })),
+                                lg: widgets.map(w => ({ 
+                                    i: w.id, 
+                                    ...w.grid,
+                                    minW: WIDGET_TYPES.find(t => t.type === w.type)?.minW || 2,
+                                    minH: WIDGET_TYPES.find(t => t.type === w.type)?.minH || 2
+                                })),
+                                md: widgets.map(w => ({ 
+                                    i: w.id, 
+                                    x: Math.min(w.grid.x, 4), 
+                                    y: w.grid.y, 
+                                    w: Math.min(w.grid.w, 8), 
+                                    h: w.grid.h,
+                                    minW: WIDGET_TYPES.find(t => t.type === w.type)?.minW || 2,
+                                    minH: WIDGET_TYPES.find(t => t.type === w.type)?.minH || 2
+                                })),
                                 sm: widgets.map(w => ({ i: w.id, x: 0, y: w.grid.y, w: 1, h: w.grid.h })),
                             }}
                             breakpoints={{ lg: 1200, md: 800, sm: 0 }}

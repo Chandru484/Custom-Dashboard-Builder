@@ -1,5 +1,6 @@
 import React from 'react';
 import { aggregateKpi } from '../../services/dataEngine';
+import { Info } from 'lucide-react';
 
 const KpiCard = ({ config, data = [], style = {} }) => {
     const fontSize = style.fontSize ? `${style.fontSize}px` : '1rem';
@@ -7,7 +8,11 @@ const KpiCard = ({ config, data = [], style = {} }) => {
 
     if (!config?.yAxis || !config?.aggregation) {
         return (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)' }}>
+            <div style={{ 
+                display: 'flex', flexDirection: 'column', alignItems: 'center', 
+                justifyContent: 'center', height: '100%', color: 'var(--text-muted)', gap: '1rem' 
+            }}>
+                <Info size={40} strokeWidth={1} opacity={0.5} />
                 <span className="text-sm">Configure KPI Settings</span>
             </div>
         );

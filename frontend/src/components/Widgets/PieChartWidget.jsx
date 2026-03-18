@@ -1,5 +1,6 @@
 import React from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { PieChart as PieIcon } from 'lucide-react';
 import { aggregateData } from '../../services/dataEngine';
 
 const COLORS = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
@@ -10,8 +11,9 @@ const PieChartWidget = ({ config, data = [], style = {} }) => {
     // If no config set, show placeholder
     if (!config?.xAxis || !config?.yAxis) {
         return (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)' }}>
-                <span>Configure Widget Settings</span>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)', gap: '1rem' }}>
+                <PieIcon size={48} strokeWidth={1} opacity={0.5} />
+                <span style={{ fontSize: '0.9rem' }}>Configure Pie Chart Settings</span>
             </div>
         );
     }
@@ -42,7 +44,7 @@ const PieChartWidget = ({ config, data = [], style = {} }) => {
                     contentStyle={{ borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', fontSize: `${fontSize}px` }}
                     formatter={(val, name) => (yKey === 'total_amount' || yKey === 'unit_price') ? [`₹${val.toLocaleString('en-IN')}`, name] : [val, name]}
                 />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: `${fontSize}px`, paddingTop: '10px' }} />
+                <Legend align="center" verticalAlign="bottom" iconType="circle" wrapperStyle={{ fontSize: `${fontSize}px`, paddingTop: '10px' }} />
             </PieChart>
         </ResponsiveContainer>
     );

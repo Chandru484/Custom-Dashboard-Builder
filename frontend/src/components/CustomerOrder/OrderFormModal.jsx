@@ -243,7 +243,7 @@ const OrderFormModal = ({ order, onClose }) => {
                             <Field lbl="Choose product" required error={errors.product}>
                                 <select name="product" style={inp(errors.product)} value={form.product} onChange={handleChange}>
                                     <option value="">Select product</option>
-                                    {dynamicProducts.map(p => <option key={p._id} value={p.name}>{p.name}</option>)}
+                                    {dynamicProducts.map(p => <option key={p._id || p.id} value={p.name}>{p.name}</option>)}
                                 </select>
                             </Field>
 

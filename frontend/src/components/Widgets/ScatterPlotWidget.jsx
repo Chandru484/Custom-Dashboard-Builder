@@ -3,6 +3,7 @@ import {
     ScatterChart, Scatter, XAxis, YAxis, ZAxis,
     CartesianGrid, Tooltip, ResponsiveContainer, Label
 } from 'recharts';
+import { ScatterChart as ScatterIcon } from 'lucide-react';
 
 // Build scatter-friendly {x, y} pairs from raw order data
 const buildScatterData = (data = [], xField, yField) => {
@@ -54,16 +55,12 @@ const ScatterPlotWidget = ({ config = {}, data = [], style = {} }) => {
             <div style={{
                 height: '100%', display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
-                color: 'var(--text-muted)', fontSize: `${fontSize}px`, gap: '0.35rem'
+                color: 'var(--text-muted)', fontSize: `${fontSize}px`, gap: '1rem'
             }}>
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="7.5" cy="15.5" r="1.5"/><circle cx="18.5" cy="5.5" r="1.5"/>
-                    <circle cx="11.5" cy="11.5" r="1.5"/><circle cx="15.5" cy="17.5" r="1.5"/>
-                </svg>
-                <span>No data available</span>
+                <ScatterIcon size={48} strokeWidth={1} opacity={0.5} />
+                <span style={{ fontSize: '0.9rem' }}>Configure Scatter Plot Settings</span>
                 {(!config.xAxis || !config.yAxis) && (
-                    <span style={{ fontSize: `${fontSize * 0.8}px`, color: 'var(--text-light)' }}>
+                    <span style={{ fontSize: `${fontSize * 0.8}px`, color: 'var(--text-light)', opacity: 0.8 }}>
                         Set X & Y axes in the Data tab
                     </span>
                 )}

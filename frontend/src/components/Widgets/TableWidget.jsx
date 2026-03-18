@@ -1,4 +1,5 @@
 import React from 'react';
+import { Table2 } from 'lucide-react';
 
 const TableWidget = ({ config, data = [], style = {} }) => {
     // A simplified data grid for the dashboard (not the main Customer Order table)
@@ -43,8 +44,13 @@ const TableWidget = ({ config, data = [], style = {} }) => {
                     </tbody>
                 </table>
                 {renderData.length === 0 && (
-                    <div style={{ textAlign: 'center', padding: '2rem 0', color: 'var(--text-muted)' }}>
-                        No data available
+                    <div style={{ 
+                        height: '100%', display: 'flex', flexDirection: 'column', 
+                        alignItems: 'center', justifyContent: 'center', 
+                        padding: '2rem 0', color: 'var(--text-muted)', gap: '1rem' 
+                    }}>
+                        <Table2 size={48} strokeWidth={1} opacity={0.5} />
+                        <span style={{ fontSize: '0.9rem' }}>No data available for Table</span>
                     </div>
                 )}
             </div>
