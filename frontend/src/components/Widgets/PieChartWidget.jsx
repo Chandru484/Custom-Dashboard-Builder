@@ -32,6 +32,7 @@ const PieChartWidget = ({ config, data = [], style = {} }) => {
                     outerRadius={80}
                     paddingAngle={5}
                     dataKey={yKey}
+                    nameKey={config.xAxis}
                 >
                     {renderData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -39,7 +40,7 @@ const PieChartWidget = ({ config, data = [], style = {} }) => {
                 </Pie>
                 <Tooltip 
                     contentStyle={{ borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', fontSize: `${fontSize}px` }}
-                    formatter={(val) => (yKey === 'total_amount' || yKey === 'unit_price') ? [`₹${val.toLocaleString('en-IN')}`, config.xAxis] : [val, config.xAxis]}
+                    formatter={(val, name) => (yKey === 'total_amount' || yKey === 'unit_price') ? [`₹${val.toLocaleString('en-IN')}`, name] : [val, name]}
                 />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: `${fontSize}px`, paddingTop: '10px' }} />
             </PieChart>
